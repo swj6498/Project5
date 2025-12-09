@@ -1,0 +1,207 @@
+/* components/Header/Header.css - 완전 독립 + !important 금지 */
+.stock-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 12px 0;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    transition: background 0.3s ease;
+}
+
+.stock-header:hover {
+    background: rgba(15, 23, 42, 0.98);
+}
+
+.stock-header__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* 로고 */
+.stock-header__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+.stock-header__logo-icon {
+    width: 36px;
+    height: 36px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+    color: #2563eb;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.stock-header__logo-text {
+    color: white;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* 네비 */
+.stock-header__nav {
+    display: none;
+    gap: 32px;
+    align-items: center;
+}
+.stock-header__nav-item {
+    color: rgba(255,255,255,0.9);
+    font-size: 15.5px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 6px 0;
+    transition: color 0.2s;
+}
+.stock-header__nav-item:hover {
+    color: white;
+}
+
+/* 드롭다운 */
+.stock-header__dropdown {
+    position: relative;
+}
+.stock-header__dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.9);
+    font-size: 15.5px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px 0;
+}
+.stock-header__dropdown-arrow {
+    font-size: 11px;
+    transition: transform 0.3s;
+}
+.stock-header__dropdown:hover .stock-header__dropdown-arrow {
+    transform: rotate(180deg);
+}
+.stock-header__dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 140px;
+    background: rgba(15,23,42,0.98);
+    border-radius: 12px;
+    padding: 10px 0;
+    margin-top: 8px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+.stock-header__dropdown:hover .stock-header__dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(4px);
+}
+.stock-header__dropdown-item {
+    display: block;
+    padding: 10px 20px;
+    color: rgba(255,255,255,0.9);
+    font-size: 14.5px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.stock-header__dropdown-item:hover {
+    background: rgba(255,255,255,0.12);
+    color: white;
+    padding-left: 24px;
+}
+
+/* 유저 영역 */
+.stock-header__user {
+    display: flex;
+    align-items: center;
+}
+.stock-header__user-logged {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14.5px;
+}
+.stock-header__user-name {
+    color: white;
+    font-weight: 600;
+}
+.stock-header__user-link {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.stock-header__user-link:hover {
+    background: rgba(255,255,255,0.15);
+    color: white;
+}
+.stock-header__logout-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.stock-header__logout-btn:hover {
+    background: #dc2626;
+}
+
+/* 로그인 버튼 */
+.stock-header__login-btn {
+    background: white;
+    color: #1e40af;
+    padding: 9px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14.5px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    transition: all 0.3s;
+}
+.stock-header__login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+/* 모바일 */
+.stock-header__mobile-toggle {
+    background: none;
+    border: none;
+    color: white;
+    padding: 8px;
+    cursor: pointer;
+}
+.stock-header__mobile-toggle svg {
+    width: 26px;
+    height: 26px;
+}
+
+@media (min-width: 768px) {
+    .stock-header__nav { display: flex; }
+    .stock-header__mobile-toggle { display: none; }
+}
+@media (max-width: 767px) {
+    .stock-header__user { display: none; }
+}

@@ -1,0 +1,147 @@
+/* 전체 화면 채우기 */
+.modify-container {
+
+    display: flex;
+    justify-content: center; /* 가운데 */
+    align-items: center; /* 세로 가운데 */
+    background: #f5f7fa;
+    padding: 20px;
+}
+
+.modify-card {
+    width: 420px;
+    background: #ffffff;
+    padding: 30px 35px;
+    border-radius: 16px;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.modify-title {
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* 공통 입력 영역 */
+.modify-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.modify-item label {
+    font-size: 14px;
+    color: #444;
+    font-weight: 600;
+}
+
+.modify-item input {
+    padding: 12px;
+    font-size: 15px;
+
+    border: 1px solid #d0d4db;
+    border-radius: 10px;
+    outline: none;
+
+    transition: 0.2s;
+}
+
+.modify-item input:focus {
+    border-color: #4b7bec;
+    box-shadow: 0 0 0 3px rgba(75, 123, 236, 0.15);
+}
+
+/* 아이디 표시 박스 */
+.readonly-box {
+    background: #f1f4f8;
+    padding: 12px;
+    border-radius: 10px;
+    color: #555;
+    font-size: 15px;
+}
+
+/* 에러 메시지 */
+.error-msg {
+    margin-top: -8px;
+    color: #ff3b30;
+    font-size: 14px;
+    text-align: left;
+}
+
+/* 버튼 */
+.modify-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+
+    background: #4b7bec;
+    border: none;
+    border-radius: 12px;
+
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.modify-btn:hover {
+    background: #3867d6;
+    transform: translateY(-2px);
+}
+
+.loading {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 18px;
+}
+
+/* 프로필 이미지 영역 */
+.profile-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* 프로필 이미지 미리보기 */
+.profile-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+
+    background: #e5e7eb;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* 사진 업로드 버튼 */
+.upload-btn {
+    display: inline-block;
+    padding: 8px 14px;
+
+    background: #4b7bec;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.upload-btn:hover {
+    background: #3867d6;
+    transform: translateY(-2px);
+}
+

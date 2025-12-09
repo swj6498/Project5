@@ -1,0 +1,72 @@
+/* src/App.css - 완전 최종 버전 */
+/* 오른쪽 흰색 여백 100% 제거 + 메인페이지는 가운데, 다른 페이지는 꽉 차게 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 화면 전체 꽉 차게 (흰색 여백 완전 제거) */
+html, body, #root, .app-wrapper {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%) fixed;
+}
+
+/* 전체 레이아웃 */
+.app-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%) fixed;
+    background-attachment: fixed;
+    color: white;
+}
+
+/* 메인페이지일 때만 가운데 정렬 + 여백 넉넉히 */
+.app-content.main-page {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px 120px; /* Header·Footer 높이 고려 */
+}
+
+/* 다른 페이지들(KrxList, KrxDetail, NewsList 등)은 위에서부터 꽉 차게 */
+.app-content:not(.main-page) {
+    flex: 1;
+    padding: 100px 20px 120px;
+    min-height: calc(100vh - 220px);
+}
+
+/* 예쁜 스크롤바 (선택사항, 예뻐서 넣어둠) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* 반응형 보정 (모바일에서 더 깔끔하게) */
+@media (max-width: 768px) {
+    .app-content.main-page,
+    .app-content:not(.main-page) {
+        padding: 90px 16px 110px;
+    }
+}
