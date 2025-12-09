@@ -25,8 +25,9 @@ import lombok.RequiredArgsConstructor;
 public class StockNewsController {
 
     private final StockNewsService stockNewsService;
-    private final MongoTemplate mongoTemplate;  // ★ 추가 필수
+    private final MongoTemplate mongoTemplate;
 
+    // 카테고리별 뉴스 목록 (기본 리스트)
     @GetMapping
     public Page<StockNews> getNews(
             @RequestParam(value = "category", required = false) String category,
@@ -37,17 +38,19 @@ public class StockNewsController {
         return stockNewsService.search(null, category, page, size, sort);
     }
 
+    // 단순 키워드 검색 (제목/본문/기자/언론사)
     @GetMapping("/search")
     public List<StockNews> searchNews(@RequestParam("q") String keyword) {
 
         Query query = new Query();
         query.addCriteria(
-            new Criteria().orOperator(
-                Criteria.where("title").regex(keyword, "i"),
-                Criteria.where("description").regex(keyword, "i"),
-                Criteria.where("author").regex(keyword, "i"),
-                Criteria.where("pub_date").regex(keyword, "i")
-            )
+                new Criteria().orOperator(
+                        Criteria.where("title").regex(keyword, "i"),
+                        Criteria.where("content").regex(keyword, "i"),
+                        Criteria.where("author").regex(keyword, "i"),
+                        Criteria.where("media").regex(keyword, "i"),
+                        Criteria.where("category").regex(keyword, "i")
+                )
         );
 
         List<StockNews> result = mongoTemplate.find(query, StockNews.class);
