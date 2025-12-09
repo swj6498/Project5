@@ -57,7 +57,7 @@ def tokenize_korean(text):
 
 def query_to_tfidf_vector(query, vectorizer, feature_names):
     """검색 쿼리를 TF-IDF 벡터로 변환"""
-    if not vectorizer or not feature_names:
+    if vectorizer is None or feature_names is None:
         return None
 
     query_tokens = tokenize_korean(query)
@@ -122,7 +122,7 @@ def search_news():
     print(f"🔍 TF-IDF 검색: '{q}' (category: {category})")
 
     if not q:
-        return jsonify({"content": [], "number": 0, "totalPages": 0})
+        return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
 
     candidate_query = {
         "tfidf": {"$exists": True},
@@ -131,19 +131,18 @@ def search_news():
     if category:
         candidate_query["category"] = category
 
-    candidates = (
-        list(
-            collection.find(candidate_query, {"_id": 0})
-            .sort("pubDate", -1)
-            .limit(1000)
-        )
+    candidates = list(
+        collection.find(candidate_query, {"_id": 0})
+        .sort("pubDate", -1)
+        .limit(1000)
     )
     print(f"📊 후보 문서: {len(candidates)}개")
 
     if not candidates:
-        return jsonify({"content": [], "number": 0, "totalPages": 0})
+        return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
 
-    if global_vectorizer is None:
+    # ✅ 처음 한 번만 벡터라이저 학습
+    if global_vectorizer is None or global_feature_names is None:
         token_texts = [
             " ".join(doc.get("tokens", []))
             for doc in candidates
@@ -153,14 +152,15 @@ def search_news():
             global_vectorizer = TfidfVectorizer(max_features=5000, min_df=2)
             global_vectorizer.fit(token_texts)
             global_feature_names = global_vectorizer.get_feature_names_out()
-            print(
-                f"✅ TF-IDF Vectorizer 학습 완료: {len(global_feature_names)}개 용어"
-            )
+            print(f"✅ TF-IDF Vectorizer 학습 완료: {len(global_feature_names)}개 용어")
+        else:
+            # tokens 자체가 없으면 검색 불가
+            return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
 
     query_vec = query_to_tfidf_vector(q, global_vectorizer, global_feature_names)
     if query_vec is None:
-        print("⚠️ 쿼리 토큰화 실패 - 기존 정규식 검색으로 폴백")
-        return jsonify({"content": [], "number": 0, "totalPages": 0})
+        print("⚠️ 쿼리 토큰화 실패 - 정규식 검색 폴백")
+        return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
 
     scores = []
     for doc in candidates:
