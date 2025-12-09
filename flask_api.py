@@ -134,7 +134,7 @@ def search_news():
 
     # tfidf 필드가 있는 문서만 후보
     candidate_query = {
-        "tfidf": {"$exists": True},
+        # "tfidf": {"$exists": True},
         "content": {"$ne": ""},
     }
     if category:
@@ -247,3 +247,4 @@ if __name__ == "__main__":
     threading.Thread(target=run_crawler, daemon=True).start()
     port = int(os.environ.get("PORT", 8585))
     app.run(host="0.0.0.0", port=port, debug=True)
+
