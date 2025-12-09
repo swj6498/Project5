@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dao.UserAccountDAO">
+    
+    <!-- 회원 정보 삽입 쿼리 -->
+    <insert id="insertUserAccount" parameterType="com.boot.dto.UserAccountDTO">
+        INSERT INTO user_account (user_num, user_id, user_password, email, nickname, profile_image)
+        VALUES (
+			user_account_seq.NEXTVAL,
+			#{user_id}, 
+			#{user_password,jdbcType=VARCHAR}, 
+			#{email}, #{nickname}, 
+			#{profileImage})
+    </insert>
+
+    <!-- 사용자 아이디로 조회 -->
+    <select id="findByUserId" parameterType="String" resultType="com.boot.dto.UserAccountDTO">
+        SELECT * FROM user_account WHERE user_id = #{userId}
+    </select>
+
+    <!-- 사용자 이메일로 조회 -->
+    <select id="findByEmail" parameterType="String" resultType="com.boot.dto.UserAccountDTO">
+        SELECT * FROM user_account WHERE email = #{email}
+    </select>
+    
+    <!-- 마이페이지 회원 정보 -->
+   <select id="findUserInfo" resultType="com.boot.dto.UserAccountDTO">
+	    SELECT 
+	        user_id AS user_id,
+	        email AS email,
+	        nickname AS nickname,
+	        profile_image AS profileImage,
+	        TO_CHAR(created_at, 'YYYY-MM-DD') AS createdAt,
+	        'LOCAL' AS loginType
+	    FROM user_account
+	    WHERE user_id = #{userId}
+	
+	    UNION
+	
+	    SELECT
+	        kakao_id AS user_id,
+	        email AS email,
+	        nickname AS nickname,
+	        profile_image AS profileImage,
+	        TO_CHAR(created_at, 'YYYY-MM-DD') AS createdAt,
+	        'KAKAO' AS loginType
+	    FROM app_user
+	    WHERE kakao_id = #{userId}
+	</select>
+	
+		
+	<update id="updateUserInfo" parameterType="com.boot.dto.UserAccountDTO">
+	    UPDATE user_account
+	    <set>
+	        <if test="email != null">email = #{email},</if>
+	        <if test="nickname != null">nickname = #{nickname},</if>
+	        <if test="user_password != null">user_password = #{user_password},</if>
+	        <if test="profileImage != null">profile_image = #{profileImage},</if>
+	    </set>
+	    WHERE user_id = #{user_id}
+	</update>
+
+
+
+	
+	<delete id="deleteUser">
+	    <choose>
+	        <!-- 일반 로그인 사용자 -->
+	        <when test="loginType == 'LOCAL'">
+	            DELETE FROM USER_ACCOUNT
+	            WHERE user_id = #{userId}
+	        </when>
+	
+	        <!-- 카카오 로그인 사용자 -->
+	        <when test="loginType == 'KAKAO'">
+	            DELETE FROM APP_USER
+	            WHERE kakao_id = #{userId}
+	        </when>
+	    </choose>
+	</delete>
+
+</mapper>
