@@ -574,3 +574,118 @@
   margin-right: 8px;
 }
 
+/* 🔍 검색 힌트 */
+.search-hint {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* 📊 Similarity 점수 */
+.similarity-score {
+    background: #10b981;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+.similarity-score-large {
+    background: #059669;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+/* 로딩 */
+.loading-message {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+    font-size: 1.1em;
+}
+
+/* 🔵 AI 요약란 스타일 */
+.ai-summary-section {
+  margin: 20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
+  border-left: 4px solid #1e40af;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.ai-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #1e40af;
+  font-size: 16px;
+}
+
+.ai-icon {
+  font-size: 20px;
+}
+
+.summary-loading {
+  margin-left: auto;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.ai-summary-loading {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1e40af;
+  animation: dotPulse 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes dotPulse {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.ai-summary-content {
+  line-height: 1.6;
+  color: #334155;
+  font-size: 15px;
+}
+
+.ai-summary-text {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.ai-summary-empty {
+  color: #64748b;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+}
+
