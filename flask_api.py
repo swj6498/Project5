@@ -44,9 +44,8 @@ def tokenize_korean(text):
     if not text:
         return []
     text = preprocess_text(text)
-    # ❌ 짧은 검색어(삼성 등)도 허용하기 위해 길이 제한 제거
 
-    # ✅ 정규식으로 명사 추출 (Render 호환)
+    # ✅ 정규식으로 명사 추출
     nouns = KOREAN_NOUN_PATTERN.findall(text)
     stopwords = {
         "기자", "사진", "연합뉴스", "매일경제", "중앙일보", "조선비즈",
@@ -122,23 +121,21 @@ def search_news():
     global global_vectorizer, global_feature_names
 
     q = request.args.get("q", "").strip()
+    # category는 로그만 남기고, 랭킹에는 사용 안 함 (전체에서 검색)
     category = unquote(request.args.get("category", ""))
     page = int(request.args.get("page", 0))
     size = int(request.args.get("size", 5))
     order = request.args.get("order", "desc")
 
-    print(f"🔍 TF-IDF 검색: '{q}' (category: {category})")
+    print(f"🔍 TF-IDF 검색: '{q}' (category param: {category})")
 
     if not q:
         return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
 
-    # tfidf 필드가 있는 문서만 후보
+    # ✅ 카테고리 상관없이 전체 문서에서 후보 추출
     candidate_query = {
-        # "tfidf": {"$exists": True},
         "content": {"$ne": ""},
     }
-    if category:
-        candidate_query["category"] = category
 
     candidates = list(
         collection.find(candidate_query, {"_id": 0})
@@ -150,7 +147,7 @@ def search_news():
     if not candidates:
         return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
 
-    # ✅ 처음 한 번만 벡터라이저 학습
+    # ✅ 처음 한 번만 벡터라이저 학습 (tokens 기반)
     if global_vectorizer is None or global_feature_names is None:
         token_texts = [
             " ".join(doc.get("tokens", []))
@@ -158,7 +155,7 @@ def search_news():
             if doc.get("tokens")
         ]
         if token_texts:
-            # 🔧 min_df=1 로 완화: 한 번만 나와도 vocabulary에 포함
+            # 한 번만 나와도 vocabulary에 포함
             global_vectorizer = TfidfVectorizer(max_features=5000, min_df=1)
             global_vectorizer.fit(token_texts)
             global_feature_names = global_vectorizer.get_feature_names_out()
@@ -169,24 +166,22 @@ def search_news():
 
     query_vec = query_to_tfidf_vector(q, global_vectorizer, global_feature_names)
     if query_vec is None:
-        print("⚠️ 쿼리 토큰화 실패 - 정규식 검색 폴백 불가")
+        print("⚠️ 쿼리 토큰화 실패 - 검색 불가")
         return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
 
     scores = []
-    for doc in candidates:
-        doc_tfidf = doc.get("tfidf", {})
-        if not doc_tfidf:
+    # 후보 문서들을 vectorizer로 한 번에 변환 (저장된 tfidf 대신 on-the-fly)
+    doc_token_texts = [
+        " ".join(doc.get("tokens", [])) if doc.get("tokens") else ""
+        for doc in candidates
+    ]
+    doc_matrix = global_vectorizer.transform(doc_token_texts).toarray()
+
+    for doc, doc_vec in zip(candidates, doc_matrix):
+        if not doc_vec.any():
             continue
-
-        # 전역 vocabulary 순서에 맞는 벡터 생성
-        doc_vec = np.zeros(len(global_feature_names))
-        for term, weight in doc_tfidf.items():
-            idx = np.where(global_feature_names == term)[0]
-            if len(idx) > 0:
-                doc_vec[idx[0]] = weight
-
         similarity = cosine_similarity([query_vec], [doc_vec])[0][0]
-        # 🔧 일단 0 이상은 모두 남겨서 결과 확인 (나중에 0.02~0.05 등으로 조정)
+        # 일단 0 이상은 모두 남겨서 결과 확인 (나중에 0.02~0.05 등으로 조정)
         if similarity >= 0.0:
             doc["similarity"] = float(similarity)
             scores.append(doc)
@@ -247,4 +242,3 @@ if __name__ == "__main__":
     threading.Thread(target=run_crawler, daemon=True).start()
     port = int(os.environ.get("PORT", 8585))
     app.run(host="0.0.0.0", port=port, debug=True)
-
