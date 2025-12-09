@@ -31,3 +31,38 @@ pip install pymongo
 
 - 주식데이터 뜨게하기(build.gradle) : 
 스프링부트 window -> preferences -> java compiler 에서 Store information about method paremeter 체크 후 Apply
+
+
+
+- 형태소 분석 구현
+
+cmd 실행
+pip install konlpy
+pip install jpype1
+
+news컬렉션 생성 후
+news.py 실행
+
+nlp_search.py 생성
+
+
+- TF-IDF 구현
+
+cmd 실행
+pip install scikit-learn numpy
+
+tfidf_rank.py 생성
+
+
+
+- AI 요약
+
+cmd 실행
+pip install google-generativeai
+pip install openai python-dotenv
+
+
+
+현재
+C:\dev\work_springboot\Project5\scripts>pip install fastapi uvicorn pydantic
+C:\dev\work_springboot\Project5\scripts>python fastapi_server.py
