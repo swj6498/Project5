@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dao.AppUserDAO">
+
+    <resultMap id="AppUserResultMap" type="com.boot.dto.AppUserDTO">
+        <id property="userId" column="USER_ID"/>
+        <result property="kakaoId" column="KAKAO_ID"/>
+        <result property="email" column="EMAIL"/>
+        <result property="nickname" column="NICKNAME"/>
+        <result property="profileImage" column="PROFILE_IMAGE"/>
+        <result property="createdAt" column="CREATED_AT"/>
+    </resultMap>
+
+    <!-- 카카오 ID로 사용자 조회 -->
+    <select id="findByKakaoId" parameterType="string" resultMap="AppUserResultMap">
+        SELECT
+            USER_ID,
+            KAKAO_ID,
+            EMAIL,
+            NICKNAME,
+            PROFILE_IMAGE,
+            CREATED_AT
+        FROM APP_USER
+        WHERE KAKAO_ID = #{kakaoId}
+    </select>
+
+    <insert id="insert" parameterType="com.boot.dto.AppUserDTO">
+        INSERT INTO APP_USER (USER_ID, KAKAO_ID, EMAIL, NICKNAME, PROFILE_IMAGE)
+        VALUES (
+            APP_USER_SEQ.NEXTVAL,  <!-- 자동 증가 ID -->
+            #{kakaoId, jdbcType=VARCHAR},
+            #{email, jdbcType=VARCHAR},
+            #{nickname, jdbcType=VARCHAR},
+            #{profileImage, jdbcType=VARCHAR}
+        )
+    </insert>
+
+</mapper>
