@@ -4,7 +4,6 @@ from urllib.parse import unquote
 from datetime import datetime
 import threading, time, os, asyncio
 import re
-import MeCab  # ✅ mecab-python3에서 제공
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
@@ -27,17 +26,18 @@ db = client["stock"]
 collection = db["news_crawling"]
 
 # 🔥 TF-IDF 전역 변수
-mecab = MeCab.Tagger()  # ✅ JVM, 외부 사전 설치 불필요
+# mecab = MeCab.Tagger()  # ❌ 삭제
 global_vectorizer = None
 global_feature_names = None
 
+# ✅ 정규식 명사 추출 패턴 (삼성전자, 반도체, 주가상승 등)
+KOREAN_NOUN_PATTERN = re.compile(r'(?:[가-힣]{2,4})(?:[가-힣\s]+[가-힣]{2,4})?')
 
 def preprocess_text(text):
     if not text:
         return ""
     text = re.sub(r"[^\w\s가-힣]", " ", text)
     return text.strip()
-
 
 def tokenize_korean(text):
     if not text:
@@ -46,24 +46,14 @@ def tokenize_korean(text):
     if len(text) < 10:
         return []
 
-    # ✅ MeCab으로 명사(NNG, NNP)만 추출
-    node = mecab.parseToNode(text)
-    nouns = []
-    while node:
-        surface = node.surface
-        features = node.feature.split(",")
-        pos = features[0] if features else ""
-        if pos in ("NNG", "NNP") and len(surface) > 1:
-            nouns.append(surface)
-        node = node.next
-
+    # ✅ 정규식으로 명사 추출 (Render 호환)
+    nouns = KOREAN_NOUN_PATTERN.findall(text)
     stopwords = {
         "기자", "사진", "연합뉴스", "매일경제", "중앙일보", "조선비즈",
         "출처", "입력", "수정", "대한", "뉴스", "시간", "지난", "이번",
     }
-    tokens = [t for t in nouns if t not in stopwords and len(t) > 1]
+    tokens = [t.strip() for t in nouns if t.strip() not in stopwords and len(t.strip()) > 1]
     return tokens[:100]
-
 
 def query_to_tfidf_vector(query, vectorizer, feature_names):
     """검색 쿼리를 TF-IDF 벡터로 변환"""
@@ -78,11 +68,9 @@ def query_to_tfidf_vector(query, vectorizer, feature_names):
     query_vec = vectorizer.transform([query_text])
     return query_vec.toarray()[0]
 
-
 @app.route("/")
 def index():
-    return "Flask API is running (TF-IDF 검색 엔진)"
-
+    return "Flask API is running (TF-IDF 검색 엔진 - Render 호환)"
 
 @app.route("/news")
 def get_news():
@@ -120,7 +108,6 @@ def get_news():
             "totalPages": (len(news_list) + size - 1) // size,
         }
     )
-
 
 @app.route("/news/search")
 def search_news():
@@ -229,12 +216,10 @@ def search_news():
         }
     )
 
-
 def run_crawler():
     while True:
         asyncio.run(crawler.main())
         time.sleep(3600)
-
 
 if __name__ == "__main__":
     threading.Thread(target=run_crawler, daemon=True).start()
