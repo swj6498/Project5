@@ -1,0 +1,159 @@
+.regiter-wrapper {
+    min-height: 100vh;
+    width: 100vw;
+    margin: 0 !important;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%) fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    flex-direction: column;  /* 자식 요소를 수직으로 정렬 */
+}
+
+.site-title-register {
+	color: #ffffff;
+    letter-spacing: -1.5px;
+    text-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.site-title-register h1 {
+	position: relative;
+    font-size: 3.75rem;
+    font-weight: 900;
+	top: -80px;
+}
+
+.register-container {
+	margin-top: -70px;
+	background: rgba(255, 255, 255, 0.11);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 28px;
+    padding: 0rem 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+}
+
+.register-input{
+	flex: 1;
+	width: 420px;
+	padding-left: 17px;
+	margin-top: -20px;
+	height: 35px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 18px;
+    color: white;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.register-input-file {
+    display: none; /* 기본 input file은 숨김 */
+}
+
+.custom-file-upload {
+    display: flex;
+    align-items: center; /* 파일 버튼과 파일명을 가로로 정렬 */
+    gap: 10px; /* 버튼과 파일명 사이 간격 */
+	margin-bottom: 20px;
+}
+
+.custom-file-label {
+    background-color: #3b82f6;
+    color: white;
+    padding: 7px 15px; /* 버튼 크기를 작게 설정 */
+    border-radius: 18px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.custom-file-label:hover {
+    background-color: #1e40af; /* 마우스 오버 시 색상 변화 */
+}
+
+.file-name {
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-left: 10px; /* 파일명과 버튼 사이의 간격 */
+}
+
+.register-p {
+    color: white;
+    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.register-title{
+	color: white;
+	text-align: center;
+	font-size: 35px;
+	margin-bottom: 50px;
+}
+
+.register-p{
+	color: white;
+	font-weight: 500;
+	font-size: medium;
+}
+
+.register-btn{
+	background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+	margin-bottom: 5px;
+}
+.register-btn:hover{
+	background-color: #1e40af;
+}
+
+.register-login{
+	background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+	margin-bottom: 40px;
+}
+.register-login:hover{
+	background-color: #1e40af;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

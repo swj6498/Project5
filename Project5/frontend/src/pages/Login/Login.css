@@ -1,0 +1,120 @@
+.login-wrapper {
+    min-height: 100vh;
+    width: 100vw;
+    margin: 0 !important;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%) fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    flex-direction: column;  /* 자식 요소를 수직으로 정렬 */
+}
+
+.site-title-login {
+	color: #ffffff;
+    letter-spacing: -1.5px;
+    text-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.site-title-login h1 {
+	position: relative;
+    font-size: 3.75rem;
+    font-weight: 900;
+	top: -80px;
+}
+
+.login-title{
+	color: white;
+	text-align: center;
+	font-size: 35px;
+	margin-bottom: 50px;
+}
+
+.login-container{
+	margin-top: -70px;
+	background: rgba(255, 255, 255, 0.11);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 28px;
+    padding: 4rem 4rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+}
+
+.login-label{
+	color: white;
+	font-size: 17px;
+	font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.login-input{
+	flex: 1;
+    padding: 1rem 0.8rem;
+	width: 350px;
+    font-size: 1.15rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 18px;
+    color: white;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.login-title{
+	margin-top: -25px;
+}
+
+.login-btn{
+	background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 16px 25px;
+    border-radius: 20px;
+	font-size: 16px;
+	font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 30px;
+	margin-bottom: 10px;
+}
+.login-btn:hover{
+	background-color: #1e40af;
+}
+
+.login-register-btn{
+	position: relative;
+	top: 20px;
+	left: 300px;
+	background: transparent;   
+	border: none;             
+	font: inherit;        
+	font-size: 16px;
+	font-weight: 500;
+	color: white;     
+	cursor: pointer;       
+	text-decoration: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
