@@ -40,5 +40,7 @@ pip install openai python-dotenv
 pip install fastapi uvicorn pydantic cd C:\dev\work_springboot\Project5\scripts python fastapi_server.py
 
 -C:\dev\work_springboot\Project5\scripts 경로에 '.env' 파일 생성
+
 내용 : PERPLEXITY_API_KEY=자신의키입력
+
 키가 자꾸 유출이 돼서 따로 관리하고있습니다.
