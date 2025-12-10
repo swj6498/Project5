@@ -1,5 +1,6 @@
 package com.boot.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.boot.dao.StockNewsRepository;
 import com.boot.dto.StockNews;
@@ -17,6 +20,10 @@ public class NewsServiceImpl implements NewsService {
 
     private final StockNewsRepository stockNewsRepository;
     private final NlpService nlpService;
+
+    // 🔵 FastAPI 연동용 RestTemplate & 기본 URL
+    private final RestTemplate restTemplate = new RestTemplate();
+    private static final String FASTAPI_BASE_URL = "http://localhost:8000";
 
     public NewsServiceImpl(StockNewsRepository stockNewsRepository, NlpService nlpService) {
         this.stockNewsRepository = stockNewsRepository;
@@ -73,7 +80,7 @@ public class NewsServiceImpl implements NewsService {
                 var pageable = PageRequest.of(
                         0,
                         200,
-                        Sort.by(Sort.Direction.DESC, "pubDate")  // 엔티티 필드명에 맞게
+                        Sort.by(Sort.Direction.DESC, "pubDate")
                 );
                 candidates = stockNewsRepository
                         .findByCategory(category, pageable)
@@ -127,7 +134,7 @@ public class NewsServiceImpl implements NewsService {
             Map<String, StockNews> byId = candidates.stream()
                     .collect(Collectors.toMap(StockNews::getId, n -> n, (a, b) -> a));
 
-            List<Map<String, Object>> merged = new java.util.ArrayList<>();
+            List<Map<String, Object>> merged = new ArrayList<>();
             for (Map<String, Object> r : ranked) {
                 String id = (String) r.get("id");
                 Double score = (Double) r.get("score");
@@ -135,7 +142,6 @@ public class NewsServiceImpl implements NewsService {
                 if (sn == null) continue;
 
                 Map<String, Object> m = new HashMap<>();
-                // 원래 StockNews 필드들
                 m.put("id", sn.getId());
                 m.put("title", sn.getTitle());
                 m.put("content", sn.getContent());
@@ -146,7 +152,6 @@ public class NewsServiceImpl implements NewsService {
                 m.put("link", sn.getLink());
                 m.put("pubDate", sn.getPubDate());
                 m.put("category", sn.getCategory());
-                // TF-IDF 점수
                 m.put("score", score);
 
                 merged.add(m);
@@ -168,7 +173,7 @@ public class NewsServiceImpl implements NewsService {
         }
     }
 
-    // 챗봇 요약 (지금은 카테고리 미사용; 원하면 category 인자 추가 가능)
+    // 챗봇 요약
     @Override
     public Map<String, Object> searchWithChatSummary(String query) {
         List<Map<String, Object>> ranked = searchWithTfidfRanking(query, null);
@@ -189,5 +194,47 @@ public class NewsServiceImpl implements NewsService {
         req.put("top_doc", top1);
 
         return nlpService.getChatSummary(req);
+    }
+
+    // 🔵 오타 교정 / 대체 검색어 제안 (FastAPI /search-correction 연동)
+    @Override
+    public Map<String, Object> getSearchCorrection(String query) {
+        try {
+            var uri = UriComponentsBuilder
+                    .fromHttpUrl(FASTAPI_BASE_URL + "/search-correction")
+                    .queryParam("q", query)
+                    .build(true)
+                    .toUri();
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> resp = restTemplate.getForObject(uri, Map.class);
+
+            if (resp == null) {
+                return Map.of(
+                        "original", query,
+                        "corrected", query,
+                        "ime_converted", query,
+                        "alternatives", List.of(),
+                        "type", "none"
+                );
+            }
+
+            return Map.of(
+                    "original", resp.getOrDefault("original", query),
+                    "corrected", resp.getOrDefault("corrected", query),
+                    "ime_converted", resp.getOrDefault("ime_converted", query),
+                    "alternatives", resp.getOrDefault("alternatives", List.of()),
+                    "type", "ime_fuzzy"
+            );
+        } catch (Exception e) {
+            System.err.println("❌ getSearchCorrection ERROR: " + e.getMessage());
+            return Map.of(
+                    "original", query,
+                    "corrected", query,
+                    "ime_converted", query,
+                    "alternatives", List.of(),
+                    "type", "error"
+            );
+        }
     }
 }

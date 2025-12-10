@@ -12,6 +12,10 @@ public interface NewsService {
     // TF-IDF 랭킹 검색
     List<Map<String, Object>> searchWithTfidfRanking(String query, String category);
 
-    // 새로 추가: 챗봇용 요약 (설명 + 상위 1개 뉴스 요약)
+    // 챗봇용 요약 (설명 + 상위 1개 뉴스 요약)
     Map<String, Object> searchWithChatSummary(String query);
+    
+    //오타 교정
+    Map<String, Object> getSearchCorrection(String query);
+
 }
