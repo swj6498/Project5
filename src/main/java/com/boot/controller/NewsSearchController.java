@@ -32,4 +32,22 @@ public class NewsSearchController {
     ) {
         return newsService.searchWithChatSummary(query);
     }
+    
+    @GetMapping("/correct")
+    public Map<String, Object> getSearchCorrection(@RequestParam("q") String query) {
+        Map<String, Object> correction = newsService.getSearchCorrection(query);
+        String original     = (String) correction.getOrDefault("original", query);
+        String corrected    = (String) correction.getOrDefault("corrected", query);
+        String imeConverted = (String) correction.getOrDefault("ime_converted", query);
+        Object alternatives = correction.getOrDefault("alternatives", List.of());
+        String type         = (String) correction.getOrDefault("type", "none");
+
+        return Map.of(
+                "original", original,
+                "corrected", corrected,
+                "ime_converted", imeConverted,
+                "alternatives", alternatives,
+                "type", type
+        );
+    }
 }
