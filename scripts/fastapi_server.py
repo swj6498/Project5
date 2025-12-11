@@ -12,7 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from nlp_search import enhanced_tokenize
 from tfidf_rank_lib import rank_with_tfidf
 from ime_converter import to_hangul
-from chat_summary_lib import build_summary, ChatSummaryResponse  # ✅ 수정: build_summary 사용
+from chat_summary_lib import build_summary, ChatSummaryResponse
+from stock_typo_corrector import best_stock_correction
 
 # 🔵 환경변수 로드
 load_dotenv()
@@ -83,6 +84,13 @@ def search_correction(q: str):
         corrected=corrected,
         alternatives=alts,
     )
+    
+# stock_typo_corrector 부분
+@app.get("/search-correction-atlas")
+def search_correction_atlas(q: str):
+    """Atlas Search 기반 주식명 오타 교정"""
+    return best_stock_correction(q)
+
 
 # ---------- ✅ Chat Summary (완전 통합 버전) ----------
 class SummaryRequest(BaseModel):
