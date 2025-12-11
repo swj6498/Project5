@@ -66,7 +66,7 @@ def ime_convert(q: str):
     """영→한 두벌식 자판 변환"""
     converted = to_hangul(q or "")
     return {"original": q, "converted": converted}
-
+    
 @app.get("/search-correction", response_model=CorrectionResponse)
 def search_correction(q: str):
     """오타 교정 + 대체 검색어 제안"""
@@ -84,12 +84,26 @@ def search_correction(q: str):
         corrected=corrected,
         alternatives=alts,
     )
-    
-# stock_typo_corrector 부분
-@app.get("/search-correction-atlas")
-def search_correction_atlas(q: str):
-    """Atlas Search 기반 주식명 오타 교정"""
-    return best_stock_correction(q)
+
+#IME + Atlas 교정 통합
+@app.get("/search-correction-smart")
+def search_correction_smart(q: str):
+    """IME + Atlas 통합 주식명 오타 교정"""
+    original = (q or "").strip()
+
+    # 1) IME 변환 (tkatjd → 삼성)
+    ime_q = to_hangul(original)
+    base_q = ime_q or original
+
+    # 2) Atlas 교정 (삼성 → 삼성전자 / 삼성증권 등)
+    atlas = best_stock_correction(base_q)
+
+    return {
+        "original": original,
+        "ime_converted": ime_q,
+        "atlas": atlas,
+    }
+
 
 
 # ---------- ✅ Chat Summary (완전 통합 버전) ----------
