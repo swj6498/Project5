@@ -199,13 +199,14 @@ function NewsList() {
 	// 🔵 초기 로드
 	useEffect(() => {
 		if (initialKeyword) {
-			setKeyword(initialKeyword);
-			setIsSearching(true);
-			fetchNews(activeCategory, 0, initialKeyword, order).then(() => {
-				setTimeout(() => fetchAiSummary(initialKeyword), 800);
-				fetchCorrection(initialKeyword);
-			});
-		}
+		    setKeyword(initialKeyword);
+		    setIsSearching(true);
+		    fetchNews(initialCategory || activeCategory, 0, initialKeyword, order);
+		    // ❌ 여기서는 fetchAiSummary / fetchCorrection 호출 안 함
+		  } else {
+		    // 검색어 없을 때 기본 카테고리 뉴스
+		    fetchNews(initialCategory || activeCategory, 0, "", order);
+		  }
 		if (initialCategory) {
 			setActiveCategory(initialCategory);
 		}
