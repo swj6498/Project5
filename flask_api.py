@@ -1,22 +1,24 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from urllib.parse import unquote
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading, time, os, asyncio
-import re
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-import scripts.naver_news_crawler as crawler
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from scripts.naver_news_crawler import task_korea_crawling
+from scripts.global_news_crawler import task_global_crawling
+
+# 🔹 Redis 추가
+import redis
+import json
 
 app = Flask(__name__)
 CORS(app)
 
-# MongoDB 연결
 MONGO_URI = os.environ.get("MONGO_URI")
 if not MONGO_URI:
     raise RuntimeError("MONGO_URI not set in Flask")
@@ -25,57 +27,114 @@ client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
 db = client["stock"]
 collection = db["news_crawling"]
 
-# 🔥 TF-IDF 전역 변수
-global_vectorizer = None
-global_feature_names = None
-
-# ✅ 정규식 명사 추출 패턴 (삼성전자, 반도체, 주가상승 등)
-KOREAN_NOUN_PATTERN = re.compile(r'(?:[가-힣]{2,4})(?:[가-힣\s]+[가-힣]{2,4})?')
+# 🔹 로컬 테스트 기준 Redis (포트 6380)
+REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6380/0")
+redis_client = redis.from_url(REDIS_URL, decode_responses=True)
+CACHE_TTL = 60  # 초, 1분 캐시
 
 
-def preprocess_text(text):
-    if not text:
-        return ""
-    text = re.sub(r"[^\w\s가-힣]", " ", text)
-    return text.strip()
+def _parse_pub_date(value):
+    """
+    pubDate를 datetime으로 변환.
+    - 이미 datetime이면 그대로 반환
+    - 문자열이면 여러 포맷을 시도해서 파싱
+    - 실패하면 None
+    """
+    if isinstance(value, datetime):
+        return value
+
+    if isinstance(value, str):
+        v = value.strip()
+        if not v:
+            return None
+
+        try:
+            return datetime.fromisoformat(v.replace("Z", "+00:00"))
+        except Exception:
+            pass
+
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(v, fmt)
+            except ValueError:
+                continue
+
+    return None
+
+# ==========================
+# 한 달 지난 기사 삭제
+# ==========================
+def delete_old_news(days: int = 30):
+    """
+    pubDate 기준으로 days일 지난 기사 삭제.
+    pubDate는 MongoDB에 datetime 타입으로 저장되어 있다고 가정.
+    """
+    threshold = datetime.now() - timedelta(days=days)
+    try:
+        result = collection.delete_many({"pubDate": {"$lt": threshold}})
+        print(f"[CLEANUP] {result.deleted_count}개 삭제 (기준일: {threshold})")
+    except Exception as e:
+        print(f"[CLEANUP ERROR] 오래된 뉴스 삭제 실패: {e}")
 
 
-def tokenize_korean(text):
-    if not text:
-        return []
-    text = preprocess_text(text)
+# 🔹 Mongo 쿼리에서 바로 정렬 + 페이지네이션
+def _sort_and_page(query, page, size, order):
+    sort_dir = -1 if order != "asc" else 1
 
-    # ✅ 정규식으로 명사 추출
-    nouns = KOREAN_NOUN_PATTERN.findall(text)
-    stopwords = {
-        "기자", "사진", "연합뉴스", "매일경제", "중앙일보", "조선비즈",
-        "출처", "입력", "수정", "대한", "뉴스", "시간", "지난", "이번",
-    }
-    tokens = [t.strip() for t in nouns if t.strip() not in stopwords and len(t.strip()) > 1]
-    return tokens[:100]
+    cursor = (
+        collection.find(query, {"_id": 0})
+        .sort("pubDate", sort_dir)
+        .skip(page * size)
+        .limit(size)
+    )
+
+    content = []
+    for news in cursor:
+        parsed = _parse_pub_date(news.get("pubDate"))
+        if parsed is None:
+            continue
+        news["pubDate"] = parsed.strftime("%Y-%m-%d %H:%M:%S")
+        content.append(news)
+
+    total_count = collection.count_documents(query)
+    total_pages = (total_count + size - 1) // size
+
+    return content, total_pages
 
 
-def query_to_tfidf_vector(query, vectorizer, feature_names):
-    """검색 쿼리를 TF-IDF 벡터로 변환"""
-    if vectorizer is None or feature_names is None:
-        return None
+# 🔹 Redis 캐시 유틸
+def _cache_key(prefix, category, page, size, order):
+    cat = category or ""
+    return f"{prefix}:cat={cat}:page={page}:size={size}:order={order}"
 
-    query_tokens = tokenize_korean(query)
-    # 토큰이 하나도 안 나오면 쿼리 단어 그대로라도 사용
-    if not query_tokens and query.strip():
-        query_tokens = [query.strip()]
 
-    if not query_tokens:
-        return None
+def get_news_with_cache(prefix, category, page, size, order, query):
+    key = _cache_key(prefix, category, page, size, order)
 
-    query_text = " ".join(query_tokens)
-    query_vec = vectorizer.transform([query_text])
-    return query_vec.toarray()[0]
+    # 1) 캐시 조회
+    try:
+        cached = redis_client.get(key)
+        if cached:
+            return json.loads(cached)
+    except Exception:
+        cached = None  # Redis 죽어 있어도 앱은 계속 돌아가게
+
+    # 2) 캐시 미스 → Mongo에서 조회
+    content, total_pages = _sort_and_page(query, page, size, order)
+    result = {"content": content, "number": page, "totalPages": total_pages}
+
+    # 3) 캐시에 저장
+    try:
+        redis_client.setex(key, CACHE_TTL, json.dumps(result))
+    except Exception:
+        pass
+
+    return result
 
 
 @app.route("/")
 def index():
-    return "Flask API is running (TF-IDF 검색 엔진 - Render 호환)"
+    return "Flask API is running"
 
 
 @app.route("/news")
@@ -86,159 +145,79 @@ def get_news():
     order = request.args.get("order", "desc")
 
     query = {"category": category} if category else {}
-    news_list = list(collection.find(query, {"_id": 0}))
 
-    for news in news_list:
-        try:
-            news["pubDate"] = datetime.strptime(
-                news.get("pubDate", "1970-01-01 00:00:00"),
-                "%Y-%m-%d %H:%M:%S",
-            )
-        except Exception:
-            news["pubDate"] = datetime(1970, 1, 1)
-
-    reverse = (order != "asc")
-    news_list.sort(key=lambda x: x["pubDate"], reverse=reverse)
-
-    start = page * size
-    end = start + size
-    content = news_list[start:end]
-
-    for news in content:
-        news["pubDate"] = news["pubDate"].strftime("%Y-%m-%d %H:%M:%S")
-
-    return jsonify(
-        {
-            "content": content,
-            "number": page,
-            "totalPages": (len(news_list) + size - 1) // size,
-        }
-    )
+    # 🔹 Redis 캐시 사용
+    result = get_news_with_cache("news", category, page, size, order, query)
+    return jsonify(result)
 
 
 @app.route("/news/search")
 def search_news():
-    global global_vectorizer, global_feature_names
-
     q = request.args.get("q", "").strip()
-    # category는 로그만 남기고, 랭킹에는 사용 안 함 (전체에서 검색)
     category = unquote(request.args.get("category", ""))
     page = int(request.args.get("page", 0))
     size = int(request.args.get("size", 5))
     order = request.args.get("order", "desc")
 
-    print(f"🔍 TF-IDF 검색: '{q}' (category param: {category})")
-
     if not q:
-        return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
+        return jsonify({"content": [], "number": 0, "totalPages": 0})
 
-    # ✅ 카테고리 상관없이 전체 문서에서 후보 추출
-    candidate_query = {
-        "content": {"$ne": ""},
+    regex = {"$regex": q, "$options": "i"}
+
+    or_query = {
+        "$or": [
+            {"title": regex},
+            {"content": regex},
+            {"author": regex},
+            {"media": regex},
+        ]
     }
 
-    candidates = list(
-        collection.find(candidate_query, {"_id": 0})
-        .sort("pubDate", -1)
-        .limit(1000)
-    )
-    print(f"📊 후보 문서: {len(candidates)}개")
-
-    if not candidates:
-        return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
-
-    # ✅ 처음 한 번만 벡터라이저 학습 (tokens 기반)
-    if global_vectorizer is None or global_feature_names is None:
-        token_texts = [
-            " ".join(doc.get("tokens", []))
-            for doc in candidates
-            if doc.get("tokens")
-        ]
-        if token_texts:
-            # 한 번만 나와도 vocabulary에 포함
-            global_vectorizer = TfidfVectorizer(max_features=5000, min_df=1)
-            global_vectorizer.fit(token_texts)
-            global_feature_names = global_vectorizer.get_feature_names_out()
-            print(f"✅ TF-IDF Vectorizer 학습 완료: {len(global_feature_names)}개 용어")
-        else:
-            # tokens 자체가 없으면 검색 불가
-            return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
-
-    query_vec = query_to_tfidf_vector(q, global_vectorizer, global_feature_names)
-    if query_vec is None:
-        print("⚠️ 쿼리 토큰화 실패 - 검색 불가")
-        return jsonify({"content": [], "number": 0, "totalPages": 0, "totalElements": 0})
-
-    scores = []
-    # 후보 문서들을 vectorizer로 한 번에 변환 (저장된 tfidf 대신 on-the-fly)
-    doc_token_texts = [
-        " ".join(doc.get("tokens", [])) if doc.get("tokens") else ""
-        for doc in candidates
-    ]
-    doc_matrix = global_vectorizer.transform(doc_token_texts).toarray()
-
-    for doc, doc_vec in zip(candidates, doc_matrix):
-        if not doc_vec.any():
-            continue
-        similarity = cosine_similarity([query_vec], [doc_vec])[0][0]
-        # 일단 0 이상은 모두 남겨서 결과 확인 (나중에 0.02~0.05 등으로 조정)
-        if similarity >= 0.0:
-            doc["similarity"] = float(similarity)
-            scores.append(doc)
-
-    if scores:
-        print(
-            f"✅ 유사도 계산 완료: {len(scores)}개 문서 "
-            f"(평균: {np.mean([s['similarity'] for s in scores]):.3f})"
-        )
+    if category:
+        query = {"$and": [{"category": category}, or_query]}
     else:
-        print("⚠️ 유사도 0 이상 문서 없음")
+        query = or_query
 
-    # similarity + pubDate 정렬
-    def parse_date_safe(v):
-        try:
-            return datetime.strptime(v, "%Y-%m-%d %H:%M:%S")
-        except Exception:
-            return datetime.min
-
-    scores.sort(
-        key=lambda x: (x.get("similarity", 0.0), parse_date_safe(x.get("pubDate", "1970-01-01 00:00:00"))),
-        reverse=True,
-    )
-
-    start = page * size
-    end = start + size
-    content = scores[start:end]
-
-    for news in content:
-        try:
-            news["pubDate"] = datetime.strptime(
-                news.get("pubDate", "1970-01-01 00:00:00"),
-                "%Y-%m-%d %H:%M:%S",
-            ).strftime("%Y-%m-%d %H:%M:%S")
-        except Exception:
-            news["pubDate"] = "1970-01-01 00:00:00"
-        # 프론트에는 내부 토큰/벡터는 숨김
-        news.pop("tokens", None)
-        news.pop("tfidf", None)
-
-    return jsonify(
-        {
-            "content": content,
-            "number": page,
-            "totalPages": (len(scores) + size - 1) // size,
-            "totalElements": len(scores),
-        }
-    )
+    # 검색은 일단 캐시 없이 바로 Mongo 조회
+    content, total_pages = _sort_and_page(query, page, size, order)
+    return jsonify({"content": content, "number": page, "totalPages": total_pages})
 
 
 def run_crawler():
     while True:
         asyncio.run(crawler.main())
+        # 크롤링 한 번 끝날 때마다 30일 지난 기사 삭제
+        delete_old_news(30)
         time.sleep(3600)
-
+        
+@app.route("/health")
+def health():
+    return "OK"
 
 if __name__ == "__main__":
-    threading.Thread(target=run_crawler, daemon=True).start()
-    port = int(os.environ.get("PORT", 8585))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    
+    # 🔹 스케줄러 설정 (전역)
+    scheduler = BackgroundScheduler(daemon=True)
+    
+    scheduler.add_job(
+        lambda: asyncio.run(task_korea_crawling()),
+        'interval',
+        minutes=5,
+        next_run_time=datetime.now()
+    )
+    
+    scheduler.add_job(
+        lambda: asyncio.run(task_global_crawling()),
+        'interval',
+        minutes=15,
+        next_run_time=datetime.now()
+    )
+    
+    scheduler.start()
+    print("🚀 [Scheduler] 국내/해외 뉴스 크롤러 스케줄러 가동됨")
+
+    # [중요] 기존에 돌던 크롤러 스레드는 충돌 방지를 위해 주석 처리(#) 합니다.
+    # threading.Thread(target=run_crawler, daemon=True).start() 
+    
+    port = int(os.environ.get("PORT", 10000)) # 렌더 포트 10000 (팀원이 8585 썼어도 렌더는 10000 권장)
+    app.run(host="0.0.0.0", port=port, debug=False)
