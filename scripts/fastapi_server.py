@@ -13,7 +13,7 @@ from nlp_search import enhanced_tokenize
 from tfidf_rank_lib import rank_with_tfidf
 from ime_converter import to_hangul
 from chat_summary_lib import build_summary, ChatSummaryResponse
-from stock_typo_corrector import best_stock_correction
+from news_typo_corrector import best_news_correction
 
 # 🔵 환경변수 로드
 load_dotenv()
@@ -86,25 +86,27 @@ def search_correction(q: str):
     )
 
 #IME + Atlas 교정 통합
-@app.get("/search-correction-smart")
-def search_correction_smart(q: str):
-    """IME + Atlas 통합 주식명 오타 교정"""
+@app.get("/news-search-correction")
+def news_search_correction(q: str):
+    """
+    뉴스 검색어용 스마트 오타 교정
+    1) IME 변환 (영타 → 한글)
+    2) 뉴스 용어 오타 보정 (Mongo + LLM)
+    """
     original = (q or "").strip()
 
-    # 1) IME 변환 (tkatjd → 삼성)
+    # 1) 영타 -> 한글 (예: tkatjd → 삼성전)
     ime_q = to_hangul(original)
     base_q = ime_q or original
 
-    # 2) Atlas 교정 (삼성 → 삼성전자 / 삼성증권 등)
-    atlas = best_stock_correction(base_q)
+    # 2) 뉴스 오타 교정 (예: 삼성전 → 삼성전자)
+    news_corr = best_news_correction(base_q)
 
     return {
-        "original": original,
-        "ime_converted": ime_q,
-        "atlas": atlas,
+        "original": original,        # 사용자가 입력한 그대로
+        "ime_converted": ime_q,      # 영타가 한글로 바뀐 값 (없으면 null)
+        "news": news_corr,           # { original, corrected, source, ... }
     }
-
-
 
 # ---------- ✅ Chat Summary (완전 통합 버전) ----------
 class SummaryRequest(BaseModel):
