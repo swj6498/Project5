@@ -50,9 +50,25 @@ def nlp_analyze(req: NlpRequest):
 
 @app.post("/tfidf-rank")
 def tfidf_rank(req: TfidfRequest):
-    """TF-IDF 기반 문서 랭킹"""
-    ranked = rank_with_tfidf(req.query, req.documents)
-    return {"ranked_docs": ranked, "total": len(ranked)}
+    """TF-IDF 기반 문서 랭킹 (교정 추가)"""
+    original_query = req.query
+    
+    # 🔵 1. 오타 교정 먼저!
+    correction = best_news_correction(original_query)
+    corrected_query = correction["corrected"]
+    
+    print(f"[TFIDF] 원본='{original_query}' → 교정='{corrected_query}'")
+    
+    # 2. 교정된 쿼리로 TF-IDF 실행
+    ranked = rank_with_tfidf(corrected_query, req.documents)
+    return {
+        "original_query": original_query,
+        "corrected_query": corrected_query,
+        "correction": correction,
+        "ranked_docs": ranked, 
+        "total": len(ranked)
+    }
+
 
 # ---------- IME 변환 / 검색 교정 ----------
 class CorrectionResponse(BaseModel):
