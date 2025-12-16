@@ -1,0 +1,256 @@
+{
+  "home": "Home",
+  "domesticStock": "Korea Stocks",
+  "news": "News",
+  "about": "About",
+  "login": "Login",
+  "logout" : "Logout",
+  "register" : "Sign up",
+  "mypage": "My Page",
+  "helloUser": "Hello, {{name}}",
+  "mainTitle": "Stock & News Search",
+  "tabStock": "📈 Stock Search",
+  "tabNews": "📰 News Search (TF-IDF)",
+  "placeholderStock": "Samsung, Apple, Tesla, Nvidia...",
+  "placeholderNews": "Shinhan Financial, Samsung, AI, Interest Rate Hike... (Morphological Analysis + TF-IDF Ranking applied)",
+  "searchHint": "💡 Searching in the News tab applies <strong>TF-IDF Ranking + Morphological Analysis + Similarity Score</strong>!",
+  "bottomText": "All real-time stock info and latest financial news in one place (TF-IDF search engine complete!)",
+  
+  "needLogin": "Login is required.",
+  "profile": "Profile",
+  "profileImg": "profile image",
+  "noFile" : "No file selected",
+  "select" : "select",
+  "id": "ID",
+  "pw": "Password",
+  "nickname": "Nickname",
+  "email": "Email",
+  "createdAt": "Sign-up Date",
+  "loginType": "Login Type",
+  "loginLocal": "Local Login",
+  "loginKakao": "Kakao Login",
+  "loginNaver": "Naver Login",
+  "loginGoogle": "Google Login",
+  "editUserInfo": "Edit Profile",
+  "deleteAccount": "Delete Account",
+  "confirmDelete": "Are you sure you want to delete your account?",
+  "deleteSuccess": "Account successfully deleted",
+  "deleteFail": "Failed to delete account",
+  "serverError": "Server error occurred",
+  "loginFail" : "The ID or password does not match.",
+  
+  "profilePreviewAlt": "Profile Preview",
+  "changePhoto": "Change Photo",
+  "password": "Change Password (Optional)",
+  "passwordPlaceholder": "Enter New Password",
+  "errorPassword": "Password must be at least 8 characters and include a special character.",
+  "submit": "Save",
+  "success": "Your information has been updated!",
+  "failed": "Update failed.",
+  
+  "errorEmail": "Please enter a valid email address.",
+  "errorUserId": "User ID is required.",
+  "duplicateId": "This user ID is already in use.",
+  "duplicateEmail": "This email address is already in use.",
+  "registerSuccess": "Registration completed successfully.",
+  "registerFail": "Registration failed.",
+  
+    "news_2": {
+      "recentViewed": "⭐ Recently Viewed Articles",
+      "noRecent": "You haven't viewed any articles yet.",
+      "showingResultFor": "Showing search results for",
+      "searchedInstead": "Showing results for the original search",
+      "searchPlaceholder": "Samsung, Apple, NVIDIA...",
+      "trendingTitle": "📈 Trending Searches",
+      "analysis": "Analysis",
+      "model": "Model",
+      "explainType": "Type",
+      "sortLatest": "Latest",
+      "sortOldest": "Oldest",
+      "noResult": "❌ No results for {{keyword}}",
+      "noNews": "No news available yet",
+      "noImage": "No Image"
+    },
+	
+	"category": {
+	    "금융": "Finance",
+	    "증권": "Stocks",
+	    "산업/재계": "Industry",
+	    "중기/벤처": "SME / Startup",
+	    "글로벌 경제": "Global Economy",
+	    "생활경제": "Living Economy",
+	    "경제 일반": "General Economy"
+	  },
+	  
+    "common": {
+      "loading": "Generating...",
+      "loadingNews": "Loading news..."
+    },
+	
+	"prev" : "Prev",
+	"next" : "Next",
+	"searchResultCount" : "results found",
+	
+	"topValueTitle": "📊 Top 5 Trading Value",
+	"rank": "Rank {{num}}",
+	"hundredMillion": "\u00A0\u00A0100M ₩",
+	"ticker": "Ticker",
+	
+	
+  "pageTitle": "KRX Real-Time Stock Quotes",
+  "baseTime": "Base Time",
+  "favorites" : "Favorites",
+  "myFavorites": "My Favorites",
+  "recentViewed": "Recently Viewed",
+  "searchPlaceholder": "Search by stock name or code",
+  "searchSuggestion": "Search for '{corrected}' instead of '{original}'?",
+  "searchResult": "Search Results",
+  "filterVolumeMin": "Min Volume",
+  "filterMarketCapMin": "Min Market Cap (100M KRW)",
+  "favoritesOnly": "Show Favorites Only",
+  "pageInfo": "Page {{page}} / {{total}} • Total {{count}} items",
+  "favoriteAdd": "Add to favorites",
+  "favoriteRemove": "Remove from favorites",
+  "rankingTrade": "Trading Value",
+  "rankingVolume": "Trading Volume",
+  "rankingChange": "Change Rate",
+  "rankingMarketCap": "Market Cap",
+  "rankingMixed": "Mixed Score",
+  "rankingTop10": "Top 10 by {type}",
+  "tableRank": "Rank",
+  "tableName": "Name",
+  "tableCurrentPrice": "Price",
+  "tableChange": "Change",
+  "tableChangeRate": "Change Rate",
+  "tableVolume": "Volume",
+  "tableTradeAmount": "Value",
+  "tableMarketCap": "Mkt Cap",
+  "tableForeign": "Foreign",
+  "loading": "Loading real-time stock data...",
+  
+  "stock": {
+    "change": {
+      "UP": "Rise",
+      "UP_LIMIT": "Limit Up",
+      "DOWN": "Fall",
+      "DOWN_LIMIT": "Limit Down",
+	  "FLAT": "Flat",
+      "NONE": "-"
+    }
+  },
+  
+  "ui": {
+      "loginRequired": "Login required. (Add/Check Favorites)",
+      "favoritesFilter": {
+        "show": "Show Favorites Only (Off)",
+        "hide": "Enable Favorites Filter"
+      }
+    },
+
+"sidebar": {
+    "recentViewed": "Recently Viewed Stocks",
+    "recentEmpty": "No recently viewed stocks.",
+
+    "favoritesList": "Favorites",
+    "favoritesEmpty": "No favorite stocks. Click the star in the table to add.",
+    "removeFavorite": "Remove from Favorites",
+	"addFavorite": "Add to Favorites"
+  },
+  "all" : "All",
+  "viewAll": "View All",
+  "won" : "₩",
+  "clickInferredWord": "Click inferred word",
+  "reSearchSimilarStocks": "Search similar stocks again",
+  
+  "Domestic" : "Domestic News",
+  "International" : "International News",
+  
+  "search": {
+      "suggestion": {
+        "similar": "Are you looking for stocks related to **{{top}}**? ({{count}} results)",
+        "inferred": "Did you mean **{{inferred}}**? The most relevant stock is **{{top}}**. ({{count}} similar stocks)"
+      }
+    },
+	
+	"stockDetail": {
+	    "common": {
+	      "back": "Back",
+	      "loading": "Loading stock information...",
+	      "notFound": "Stock not found",
+	      "loadFail": "Failed to load data"
+	    },
+	    "info": {
+	      "currentPrice": "Current Price",
+	      "change": "Change",
+	      "changeRate": "Change Rate",
+	      "volume": "Volume",
+	      "marketCap": "Market Cap",
+	      "foreignRatio": "Foreign Ownership"
+	    },
+	    "price": {
+	      "title": "Key Prices (Real-time)",
+	      "prevClose": "Previous Close",
+	      "open": "Open",
+	      "high": "High",
+	      "low": "Low",
+	      "upperLimit": "Upper Limit",
+	      "lowerLimit": "Lower Limit",
+	      "tradeAmount": "Trading Value"
+	    },
+	    "chart": {
+	      "title": "Price Chart",
+	      "area": "Line Chart",
+	      "candle": "Candlestick",
+	      "loading": "Loading chart...",
+	      "unavailable": "Unable to load chart",
+	      "period": {
+	        "day": "1 Day",
+	        "week": "1 Week",
+	        "month3": "3 Months",
+	        "year": "1 Year",
+	        "year3": "3 Years",
+	        "year5": "5 Years",
+	        "year10": "10 Years"
+	      },
+		  "candlePeriod": {
+          "day": "Daily",
+          "week": "Weekly",
+          "month": "Monthly"
+        }
+	    },
+	    "news": {
+	      "title": "Latest News & Disclosures",
+	      "loading": "Loading news...",
+	      "empty": "No news available",
+	      "more": "View all news on Naver Finance"
+	    },
+		"global": {
+	      "placeholder": "Samsung, Apple, NVIDIA...",
+	      "recentViewed": "⭐ Recently Viewed",
+	      "sort": {
+	        "latest": "🕒 Latest",
+	        "oldest": "📅 Oldest"
+	      },
+	      "pagination": {
+	        "prev": "Previous",
+	        "next": "Next"
+	      },
+	      "original": "Original Article"
+	    }
+	  },
+	  "globalNews": {
+	      "placeholder": "Samsung Electronics, Apple, NVIDIA...",
+	      "recentViewed": "⭐ Recently Viewed Articles",
+	      "sort": {
+	        "latest": "🕒 Latest",
+	        "oldest": "📅 Oldest"
+	      },
+	      "pagination": {
+	        "prev": "Prev",
+	        "next": "Next"
+	      },
+	      "original": "Original Article",
+	      "loading": "Loading...",
+	      "empty": "No news available"
+	    }
+}

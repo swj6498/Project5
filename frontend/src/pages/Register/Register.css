@@ -1,24 +1,21 @@
 .regiter-wrapper {
-    min-height: 100vh;
-    width: 100vw;
+	display: flex;
+    justify-content: center;  /* 수평 중앙 */
+    align-items: center;      /* 수직 중앙 */
+    flex-direction: column;
+
+    height: 100vh;      /* min-height 대신 height */
+    width: 100%;
     margin: 0 !important;
-    padding: 2rem 1rem;
-    background: linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%) fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow: hidden;
+    padding: 0;
     box-sizing: border-box;
-    flex-direction: column;  /* 자식 요소를 수직으로 정렬 */
 }
 
 .site-title-register {
 	color: #ffffff;
     letter-spacing: -1.5px;
     text-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+	margin-bottom: 60px;
 }
 
 .site-title-register h1 {
@@ -30,11 +27,12 @@
 
 .register-container {
 	margin-top: -70px;
+	margin-bottom: -60px;
 	background: rgba(255, 255, 255, 0.11);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     border-radius: 28px;
-    padding: 0rem 3rem;
+    padding: 3rem 3rem;
     border: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
 }
@@ -44,6 +42,7 @@
 	width: 420px;
 	padding-left: 17px;
 	margin-top: -20px;
+	margin-bottom: 10px;
 	height: 35px;
     font-size: 1rem;
     background: rgba(255, 255, 255, 0.2);

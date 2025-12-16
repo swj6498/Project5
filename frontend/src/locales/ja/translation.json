@@ -1,0 +1,255 @@
+{
+  "home": "ホーム",
+  "domesticStock": "韓国株",
+  "news": "ニュース",
+  "about": "About",
+  "login": "ログイン",
+  "logout": "ログアウト",
+  "register" : "会員登録",
+  "mypage": "マイページ",
+  "helloUser": "{{name}}さん",
+  "mainTitle": "株式＆ニュース検索",
+  "tabStock": "📈 株式検索",
+  "tabNews": "📰 ニュース検索 (TF-IDF)",
+  "placeholderStock": "サムスン, アップル, テスラ, エヌビディア...",
+  "placeholderNews": "シンハン金融, サムスン, AI, 金利上昇... (形態素解析+TF-IDFランキング適用)",
+  "searchHint": "💡 ニュースタブで検索すると <strong>TF-IDFランキング + 形態素解析 + 類似度スコア</strong> が適用されます！",
+  "bottomText": "リアルタイム株価情報と最新金融ニュースを一箇所で (TF-IDF検索エンジン完成！)",
+  
+  "needLogin": "ログインが必要です。",
+  "profile": "プロフィール",
+  "profileImg": "プロフィール画像",
+  "noFile" : "ファイルが選択されていません",
+  "select" : "選択",
+  "id": "ID",
+  "pw": "パスワード",
+  "nickname": "ニックネーム",
+  "email": "メール",
+  "createdAt": "登録日",
+  "loginType": "ログイン方法",
+  "loginLocal": "通常ログイン",
+  "loginKakao": "カカオログイン",
+  "loginNaver": "ネイバーログイン",
+  "loginGoogle": "グーグルログイン",
+  "editUserInfo": "会員情報を修正",
+  "deleteAccount": "会員退会",
+  "confirmDelete": "本当に退会しますか？",
+  "deleteSuccess": "退会が完了しました。",
+  "deleteFail": "退会に失敗しました。",
+  "serverError": "サーバーエラーが発生しました。",
+  "loginFail" : "IDやパスワードが一致しません。",
+  
+  "profilePreviewAlt": "プロフィールプレビュー",
+  "changePhoto": "写真を変更",
+  "password": "パスワード変更（任意）",
+  "passwordPlaceholder": "新しいパスワードを入力",
+  "errorPassword": "パスワードは8文字以上で、記号を含める必要があります。",
+  "submit": "保存する",
+  "success": "会員情報が更新されました！",
+  "failed": "更新に失敗しました。",
+  
+  "errorEmail": "有効なメールアドレスを入力してください。",
+  "errorUserId": "ユーザーIDは必須項目です。",
+  "duplicateId": "既に使用されているユーザーIDです。",
+  "duplicateEmail": "既に使用されているメールアドレスです。",
+  "registerSuccess": "会員登録が完了しました。",
+  "registerFail": "会員登録に失敗しました。",
+  
+	"news_2": {
+	  "recentViewed": "⭐ 最近見た記事",
+	  "noRecent": "まだ閲覧した記事がありません。",
+	  "showingResultFor": "検索結果を表示中：",
+	  "searchedInstead": "最初の検索結果を表示します",
+	  "searchPlaceholder": "サムスン、アップル、エヌビディア…",
+	  "trendingTitle": "📈 人気の検索ワード",
+	  "analysis": "分析",
+	  "model": "モデル",
+	  "explainType": "タイプ",
+	  "sortLatest": "新しい順",
+	  "sortOldest": "古い順",
+	  "noResult": "❌ {{keyword}} の検索結果はありません",
+	  "noNews": "まだニュースがありません",
+	  "noImage": "画像なし"
+	},
+
+	"category": {
+	    "금융": "金融",
+	    "증권": "証券",
+	    "산업/재계": "産業/財界",
+	    "중기/벤처": "中小企業/ベンチャー",
+	    "글로벌 경제": "グローバル経済",
+	    "생활경제": "生活経済",
+	    "경제 일반": "経済一般"
+	  },
+	  
+	"common": {
+	  "loading": "生成中...",
+	  "loadingNews": "ニュース読み込み中..."
+	},
+	
+	"prev" : "前へ",
+	"next" : "次へ",
+	"searchResultCount" : "件",
+	
+	"topValueTitle": "📊 取引代金 Top 5",
+	"rank": "{{num}}位",
+	"hundredMillion": "億 ₩",
+	"ticker": "銘柄",
+	
+  "pageTitle": "KRXリアルタイム株価表",
+  "baseTime": "基準時刻",
+  "favorites" : "お気に入り",
+  "myFavorites": "マイお気に入り",
+  "recentViewed": "最近見た銘柄",
+  "searchPlaceholder": "銘柄名またはコードを検索",
+  "searchSuggestion": "'{original}' の代わりに '{corrected}' で検索しますか？",
+  "searchResult": "検索結果",
+  "filterVolumeMin": "最小出来高",
+  "filterMarketCapMin": "最小時価総額（億）",
+  "favoritesOnly": "お気に入りのみ表示",
+  "pageInfo": "ページ {{page}} / {{total}} • 合計 {{count}}銘柄",
+  "favoriteAdd": "お気に入り追加",
+  "favoriteRemove": "お気に入り解除",
+  "rankingTrade": "売買代金",
+  "rankingVolume": "出来高",
+  "rankingChange": "変動率",
+  "rankingMarketCap": "時価総額",
+  "rankingMixed": "総合スコア",
+  "rankingTop10": "{type} Top 10",
+  "tableRank": "順位",
+  "tableName": "銘柄名",
+  "tableCurrentPrice": "現在値",
+  "tableChange": "前日比",
+  "tableChangeRate": "変動率",
+  "tableVolume": "出来高",
+  "tableTradeAmount": "売買代金（億）",
+  "tableMarketCap": "時価総額（億）",
+  "tableForeign": "外国人比率",
+  "loading": "リアルタイム価格を読み込み中...",
+  
+  "stock": {
+      "change": {
+        "UP": "上昇",
+        "UP_LIMIT": "ストップ高",
+        "DOWN": "下落",
+        "DOWN_LIMIT": "ストップ安",
+		"FLAT": "横ばい",
+        "NONE": "-"
+      }
+    },
+
+	"ui": {
+	    "loginRequired": "ログインが必要です。（お気に入り追加/確認）",
+	    "favoritesFilter": {
+	      "show": "お気に入りのみ表示（解除）",
+	      "hide": "お気に入りフィルターをオン"
+	    }
+	  },
+	  
+  "sidebar": {
+      "recentViewed": "最近見た銘柄",
+      "recentEmpty": "最近見た銘柄はありません。",
+
+      "favoritesList": "お気に入りリスト",
+      "favoritesEmpty": "お気に入りの銘柄はありません。テーブルで星マークを押して追加してください。",
+      "removeFavorite": "お気に入り削除",
+	  "addFavorite": "お気に入りに追加"
+    },
+	"all" : "すべて",
+	"viewAll": "すべて見る",
+	"won" : "₩",
+	"clickInferredWord": "推定単語をクリック",
+	"reSearchSimilarStocks": "類似銘柄を再検索",
+	
+	"Domestic" : "国内ニュース",
+	"International" : "海外ニュース",
+	
+	"search": {
+	    "suggestion": {
+	      "similar": "**{{top}}** を含む類似銘柄（{{count}}件）をお探しですか？",
+	      "inferred": "もしかして **{{inferred}}** を検索しましたか？最も関連性の高い銘柄は **{{top}}** です。（{{count}}件）"
+	    }
+	  },
+	  
+	  "stockDetail": {
+	      "common": {
+	        "back": "戻る",
+	        "loading": "銘柄情報を読み込み中...",
+	        "notFound": "銘柄が見つかりません",
+	        "loadFail": "データの読み込みに失敗しました"
+	      },
+	      "info": {
+	        "currentPrice": "現在価格",
+	        "change": "前日比",
+	        "changeRate": "騰落率",
+	        "volume": "出来高",
+	        "marketCap": "時価総額",
+	        "foreignRatio": "外国人保有率"
+	      },
+	      "price": {
+	        "title": "主要価格（リアルタイム）",
+	        "prevClose": "前日終値",
+	        "open": "始値",
+	        "high": "高値",
+	        "low": "安値",
+	        "upperLimit": "ストップ高",
+	        "lowerLimit": "ストップ安",
+	        "tradeAmount": "売買代金"
+	      },
+	      "chart": {
+	        "title": "株価チャート",
+	        "area": "ラインチャート",
+	        "candle": "ローソク足",
+	        "loading": "チャートを読み込み中...",
+	        "unavailable": "チャートを表示できません",
+	        "period": {
+	          "day": "1日",
+	          "week": "1週間",
+	          "month3": "3か月",
+	          "year": "1年",
+	          "year3": "3年",
+	          "year5": "5年",
+	          "year10": "10年"
+	        },
+			"candlePeriod": {
+		       "day": "日足",
+		       "week": "週足",
+		       "month": "月足"
+		     }
+	      },
+	      "news": {
+	        "title": "最新ニュース・公示",
+	        "loading": "ニュースを読み込み中...",
+	        "empty": "ニュースはありません",
+	        "more": "ネイバー証券でニュース一覧を見る"
+	      },
+		  "global": {
+	       "placeholder": "サムスン、アップル、エヌビディア...",
+	       "recentViewed": "⭐ 最近見た記事",
+	       "sort": {
+	         "latest": "新しい順",
+	         "oldest": "古い順"
+	       },
+	       "pagination": {
+	         "prev": "前へ",
+	         "next": "次へ"
+	       },
+	       "original": "元の記事"
+	     }
+	   },
+	   "globalNews": {
+	       "placeholder": "サムスン電子、Apple、NVIDIA...",
+	       "recentViewed": "⭐ 最近見た記事",
+	       "sort": {
+	         "latest": "🕒 最新順",
+	         "oldest": "📅 古い順"
+	       },
+	       "pagination": {
+	         "prev": "前へ",
+	         "next": "次へ"
+	       },
+	       "original": "元記事",
+	       "loading": "読み込み中...",
+	       "empty": "ニュースがありません"
+	     }
+}

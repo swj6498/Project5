@@ -1,0 +1,160 @@
+.stock-detail__container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.stock-detail__loading-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.1rem;
+}
+
+.stock-detail__alert {
+    margin: 40px;
+}
+
+.stock-detail__back-btn {
+    margin-bottom: 30px;
+}
+
+.stock-detail__info {
+    padding: 30px;
+    border-radius: 12px;
+    background-color: #f8fbff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.stock-detail__name {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #0d47a1;
+}
+
+.stock-detail__code {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.stock-detail__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.stock-detail__label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.stock-detail__value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.stock-detail__value.red { color: red; }
+.stock-detail__value.blue { color: blue; }
+
+.stock-detail__chart-mode,
+.stock-detail__chart-period {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.stock-detail__btn-contained {
+    background-color: #0d47a1;
+    color: #fff;
+    margin: 0 5px 5px 5px;
+    min-width: 80px;
+}
+
+.stock-detail__btn-outlined {
+    border: 1px solid #0d47a1;
+    color: #0d47a1;
+    margin: 0 5px 5px 5px;
+    min-width: 80px;
+}
+
+.stock-detail__chart-card {
+    padding: 30px;
+    border-radius: 12px;
+    background-color: #f1f5f9;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.stock-detail__chart-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.stock-detail__chart-loading {
+    padding: 40px 0;
+}
+
+.stock-detail__chart-image {
+    max-width: 100%;
+    height: 400px;
+}
+
+.stock-detail__news-card {
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+}
+
+.stock-detail__news-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.stock-detail__divider {
+    margin-bottom: 15px;
+}
+
+.stock-detail__news-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.stock-detail__news-link a {
+    text-decoration: none;
+    color: #0d47a1;
+}
+
+.stock-detail__news-link a:hover {
+    text-decoration: underline;
+}
+
+.stock-detail__news-date {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.stock-detail__news-more {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* 재무지표 그리드 반응형 */
+@media (max-width: 600px) {
+    .stock-detail__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 테이블 스타일 */
+.MuiTableCell-root {
+    padding: 10px !important;
+    font-size: 0.95rem;
+}
+
+.MuiTableHead-root {
+    background-color: #f5f5f5;
+}

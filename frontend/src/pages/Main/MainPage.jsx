@@ -21,11 +21,12 @@ function MainPage() {
             navigate(`/news?category=금융&q=${encodeURIComponent(q)}`);
             return;
         }
-        
-		if (activeTab === 'stock') {
-		    navigate(`/krx/list?q=${encodeURIComponent(q)}`);
-		    return;
-		  }
+
+        if (activeTab === 'stock') {
+            // 🌟 주목: '/krx/list' 경로로 이동하며 검색어 'q'를 쿼리 파라미터로 전달
+            navigate(`/krx/list?q=${encodeURIComponent(q)}`);
+            return;
+        }
     };
 
     return (
@@ -63,13 +64,7 @@ function MainPage() {
                         </svg>
                     </button>
                 </form>
-
-                {searchTerm && (
-                    <p className="search-hint" dangerouslySetInnerHTML={{ __html: t("searchHint") }} />
-                )}
             </div>
-
-            <p className="bottom-text">{t("bottomText")}</p>
         </div>
     );
 }

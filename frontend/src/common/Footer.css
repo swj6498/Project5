@@ -1,18 +1,16 @@
-/* components/Footer/Footer.css - 완전 독립 */
+/* components/Footer/Footer.css - flow 안에 들어가되, min-height로 화면 하단 고정 효과 */
+
 .stock-footer {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 1000;
-    padding: 14px 20px;
-    background: rgba(15, 23, 42, 0.9);
+    padding: 32px 20px 40px;
+    background: rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid rgba(255,255,255,0.1);
-    transition: background 0.3s;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin-top: auto; /* 이게 핵심! */
 }
 
 .stock-footer:hover {
-    background: rgba(15, 23, 42, 0.98);
+    background: rgba(15, 23, 42, 1);
 }
 
 .stock-footer__inner {
@@ -21,32 +19,35 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    color: rgba(255,255,255,0.7);
+    gap: 20px;
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.75);
 }
 
 .stock-footer__links {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 28px;
 }
 
 .stock-footer__social {
     display: flex;
-    gap: 18px;
+    gap: 20px;
 }
+
 .stock-footer__social-link {
     color: rgba(255,255,255,0.6);
-    transition: all 0.3s;
+    transition: all 0.28s ease;
 }
+
 .stock-footer__social-link:hover {
     color: white;
-    transform: translateY(-3px) scale(1.2);
+    transform: translateY(-4px) scale(1.25);
 }
+
 .stock-footer__social-link svg {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
 }
 
 .stock-footer__copyright {
@@ -59,9 +60,15 @@
     color: rgba(255,255,255,0.5);
 }
 
+/* 데스크톱 */
 @media (min-width: 768px) {
+    .stock-footer {
+        padding: 28px 20px;
+    }
+
     .stock-footer__inner {
         flex-direction: row;
         justify-content: space-between;
+        gap: 40px;
     }
 }

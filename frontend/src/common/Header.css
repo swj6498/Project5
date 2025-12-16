@@ -70,61 +70,74 @@
     color: white;
 }
 
-/* 드롭다운 */
+/* --- 드롭다운 디자인 (헤더와 자연스럽게 이어짐) --- */
+
+/* 드롭다운 컨테이너 */
 .stock-header__dropdown {
-    position: relative;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%; /* 헤더 높이와 동일 */
 }
-.stock-header__dropdown-toggle {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.9);
-    font-size: 15.5px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 6px 0;
+
+/* "뉴스 ▾" 텍스트 */
+.dropdown-trigger {
+  cursor: pointer;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  color: rgba(255,255,255,0.9);
+  font-size: 15px;
+  font-weight: 500;
 }
-.stock-header__dropdown-arrow {
-    font-size: 11px;
-    transition: transform 0.3s;
+
+/* 드롭다운 메뉴 */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  padding-top: 20px; 
+  top: 100%;     /* 헤더 바로 밑에 붙이기 */
+  left: 52%;       /* '뉴스' 메뉴 왼쪽부터 시작 */
+  transform: translateX(-50%);
+
+  background: #0f172a; /* 헤더와 같은 색으로 일체감 */
+  border: none;
+  border-radius: 0 0 10px 10px; /* 아래만 둥글게 */
+
+  padding-bottom: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+  z-index: 999;
+  min-width: 100px;
 }
-.stock-header__dropdown:hover .stock-header__dropdown-arrow {
-    transform: rotate(180deg);
+
+/* 드롭다운 항목 */
+.dropdown-item {
+  display: block;
+  padding: 12px 20px;
+  text-align: left;
+
+  font-size: 14px;
+  color: #ffffff;              /* 🔹 기본: 흰색 */
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
 }
-.stock-header__dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 140px;
-    background: rgba(15,23,42,0.98);
-    border-radius: 12px;
-    padding: 10px 0;
-    margin-top: 8px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
+
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.12); /* 🔹 살짝 회색 */
+  color: #2563eb;                        /* 🔹 파란색 */
 }
-.stock-header__dropdown:hover .stock-header__dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(4px);
+
+/* 메뉴 hover 시 드롭다운 표시 */
+.stock-header__dropdown:hover .dropdown-menu {
+  display: block;
 }
-.stock-header__dropdown-item {
-    display: block;
-    padding: 10px 20px;
-    color: rgba(255,255,255,0.9);
-    font-size: 14.5px;
-    text-decoration: none;
-    transition: all 0.2s;
-}
-.stock-header__dropdown-item:hover {
-    background: rgba(255,255,255,0.12);
-    color: white;
-    padding-left: 24px;
+
+/* 뉴스 hover 시 헤더 색과 완전 일체화 */
+.stock-header__dropdown:hover {
+  background: #0f172a; /* 헤더 색과 동일 */
 }
 
 /* 유저 영역 */
@@ -204,4 +217,13 @@
 }
 @media (max-width: 767px) {
     .stock-header__user { display: none; }
+}
+
+.stock-header .dropdown-menu .dropdown-item {
+  color: #ffffff;
+}
+
+.stock-header .dropdown-menu .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgb(255, 255, 255);
 }

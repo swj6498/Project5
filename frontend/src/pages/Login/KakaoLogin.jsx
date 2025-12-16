@@ -3,10 +3,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./KakaoLogin.css";
+import { useTranslation } from "react-i18next";
 
 const KakaoLogin = () => {
+	const { t } = useTranslation();
     const navigate = useNavigate();
-    const { loginSuccess } = useAuth();   // ✔ login → loginSuccess
+    const { loginSuccess } = useAuth();
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -39,14 +41,20 @@ const KakaoLogin = () => {
 
                         axios.post(
                             "http://localhost:8585/api/auth/loginOrRegister",
-                            dto,
-                            { withCredentials: true }
+                            dto
                         )
                             .then(result => {
                                 console.log("서버 응답:", result.data);
 
-                                // 🔥 전역 로그인 상태 업데이트
-                                loginSuccess(result.data.nickname);   // ✔ 수정됨
+                                const { token } = result.data;
+
+                                // ⭐ JWT 저장
+                                localStorage.setItem("token", token);
+
+                                // ⭐ 전역 로그인 상태 변경
+                                loginSuccess(token);
+								localStorage.setItem("jwtToken", result.data.token);
+								localStorage.setItem("nickname", result.data.user.nickname);
 
                                 alert("로그인 성공!");
                                 navigate("/");
@@ -65,7 +73,7 @@ const KakaoLogin = () => {
 
     return (
         <button className="kakao-btn" onClick={handleKakaoLogin}>
-            카카오 로그인
+            {t("loginKakao")}
         </button>
     );
 };

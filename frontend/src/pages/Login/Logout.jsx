@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function Logout({ onLogout }) {
+	const { t } = useTranslation();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -9,7 +11,7 @@ function Logout({ onLogout }) {
             .then(() => {
                 alert("로그아웃 되었습니다.");
 
-                // 🔥 부모에게 로그아웃 완료 알림 → Header 즉시 업데이트
+                // 부모에게 로그아웃 완료 알림 → Header 즉시 업데이트
                 onLogout();
 
                 // 페이지 이동만 하고 reload 제거
@@ -20,7 +22,7 @@ function Logout({ onLogout }) {
 
     return (
         <button className="stock-header__login-btn" onClick={handleLogout}>
-            로그아웃
+            {t("logout")}
         </button>
     );
 }

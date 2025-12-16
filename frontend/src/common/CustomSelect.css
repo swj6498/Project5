@@ -1,0 +1,72 @@
+/* 전체 컨테이너 */
+.custom-select {
+    position: relative;
+	right: 20px;
+    width: 90px;
+    font-size: 14px;
+    user-select: none;
+}
+
+/* 선택된 값 버튼 */
+.custom-select-btn {
+    width: 100%;
+    padding: 6px 10px;
+    background: #ffffff20; /* 살짝 투명한 화이트 */
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: 0.2s;
+}
+
+/* hover: 약간 밝게 */
+.custom-select-btn:hover {
+    background: #ffffff30;
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* 아래 화살표 */
+.arrow {
+    margin-left: 6px;
+    font-size: 10px;
+}
+
+.arrow.open {
+    transform: rotate(180deg);
+}
+
+/* 드롭다운 영역 */
+.custom-select-list {
+    position: absolute;
+    width: 100%;
+    margin-top: 6px;
+
+    background: #ffffff;
+    border-radius: 8px;
+
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+
+    z-index: 999;
+}
+
+/* 드롭다운 아이템 */
+.custom-select-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s;
+    font-weight: 500;
+    color: #333;
+}
+
+/* hover 색상 */
+.custom-select-item:hover {
+    background: #f3f4f6;
+}
