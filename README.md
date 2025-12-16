@@ -25,9 +25,6 @@ pip install pymongo
 ├── package-lock.json      (정확한 종속성 버전 잠금)  
 └── README.md  
 
-1. 프로젝트 임포트후에 터미널로 frontend 폴더 안에서 npm install
-2. npm run dev
-
 
 - 주식데이터 뜨게하기(build.gradle) : 
 스프링부트 window -> preferences -> java compiler 에서 Store information about method paremeter 체크 후 Apply
@@ -44,4 +41,14 @@ pip install fastapi uvicorn pydantic cd C:\dev\work_springboot\Project5\scripts 
 내용 : PERPLEXITY_API_KEY=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
 MONGO_URI="mongodb+srv://kh:1234@cluster0.fbav0ho.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-키가 자꾸 유출이 돼서 따로 관리하고있습니다.
+프로젝트 실행 순서
+
+1. ubuntu: redis-server
+2. (프로젝트 폴더 루트 기준) cd frontend
+3. npm install
+4. npm run dev
+5. boot 실행
+6. 터미널 추가: cd script
+7. uvicorn StockSearch:app --reload
+8. 터미널 추가: cd script
+9. python fastapi_server.py
