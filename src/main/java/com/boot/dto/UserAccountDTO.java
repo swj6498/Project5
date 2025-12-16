@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class UserAccountDTO {
 
 	private Long user_num;
+	private String social_type;
     private String user_id;
     private String user_password;
     private String email;

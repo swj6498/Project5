@@ -1,3 +1,5 @@
+// src/main/java/com/boot/dto/StockKosdaqDTO.java (수정된 코드)
+
 package com.boot.dto;
 
 import lombok.Data;
@@ -5,11 +7,13 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Data
 @Document(collection = "naver_kosdaq")
-public class StockKosdaqDTO {
+// 🚩 [수정] StockCommon 인터페이스를 상속받습니다.
+public class StockKosdaqDTO implements StockCommon {
 
     @Id
     private ObjectId _id;             // MongoDB ObjectId
@@ -18,7 +22,7 @@ public class StockKosdaqDTO {
     private String crawl_date; // 크롤링 날짜
     private String change;            // 등락
     private String change_rate;       // 등락률
-    private LocalDateTime crawled_at; // 실제 크롤링 시각
+    private Instant crawled_at; // 실제 크롤링 시각 (Instant 유지)
     private Integer current_price;    // 현재가
     private Integer face_value;       // 액면가
     private Double foreign_ratio;     // 외국인 지분율
@@ -29,4 +33,6 @@ public class StockKosdaqDTO {
     private Integer rank;             // 순위
     private Double roe;               // ROE
     private Long volume;              // 거래량
+    private String search;  // 추가 (예: "삼성전자 005930 삼성전자 전자")
+
 }

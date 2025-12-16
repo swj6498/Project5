@@ -6,6 +6,9 @@
     <resultMap id="AppUserResultMap" type="com.boot.dto.AppUserDTO">
         <id property="userId" column="USER_ID"/>
         <result property="kakaoId" column="KAKAO_ID"/>
+        <result property="naverId" column="NAVER_ID"/>
+        <result property="googleId" column="GOOGLE_ID"/>
+        <result property="socialType" column="SOCIAL_TYPE"/>
         <result property="email" column="EMAIL"/>
         <result property="nickname" column="NICKNAME"/>
         <result property="profileImage" column="PROFILE_IMAGE"/>
@@ -17,6 +20,9 @@
         SELECT
             USER_ID,
             KAKAO_ID,
+            NAVER_ID,
+			GOOGLE_ID,
+            SOCIAL_TYPE,
             EMAIL,
             NICKNAME,
             PROFILE_IMAGE,
@@ -24,15 +30,59 @@
         FROM APP_USER
         WHERE KAKAO_ID = #{kakaoId}
     </select>
+    
+    <select id="findByNaverId" parameterType="string" resultMap="AppUserResultMap">
+        SELECT
+            USER_ID,
+            KAKAO_ID,
+            NAVER_ID,
+            GOOGLE_ID,
+            SOCIAL_TYPE,
+            EMAIL,
+            NICKNAME,
+            PROFILE_IMAGE,
+            CREATED_AT
+        FROM APP_USER
+        WHERE NAVER_ID = #{naverId}
+    </select>
+    
+    <select id="findByGoogleId" parameterType="string" resultMap="AppUserResultMap">
+        SELECT
+            USER_ID,
+            KAKAO_ID,
+            NAVER_ID,
+            GOOGLE_ID,
+            SOCIAL_TYPE,
+            EMAIL,
+            NICKNAME,
+            PROFILE_IMAGE,
+            CREATED_AT
+        FROM APP_USER
+        WHERE GOOGLE_ID = #{googleId}
+    </select>
 
     <insert id="insert" parameterType="com.boot.dto.AppUserDTO">
-        INSERT INTO APP_USER (USER_ID, KAKAO_ID, EMAIL, NICKNAME, PROFILE_IMAGE)
+        INSERT INTO APP_USER (
+            USER_ID,
+            KAKAO_ID,
+            NAVER_ID,
+            GOOGLE_ID,
+            SOCIAL_TYPE,
+            EMAIL,
+            NICKNAME,
+            PROFILE_IMAGE,
+            CREATED_AT
+        )
         VALUES (
-            APP_USER_SEQ.NEXTVAL,  <!-- 자동 증가 ID -->
+            APP_USER_SEQ.NEXTVAL,
             #{kakaoId, jdbcType=VARCHAR},
+            #{naverId, jdbcType=VARCHAR},
+            #{googleId, jdbcType=VARCHAR},
+            #{socialType, jdbcType=VARCHAR},
             #{email, jdbcType=VARCHAR},
             #{nickname, jdbcType=VARCHAR},
-            #{profileImage, jdbcType=VARCHAR}
+            #{profileImage, jdbcType=VARCHAR},
+            SYSDATE
         )
     </insert>
 

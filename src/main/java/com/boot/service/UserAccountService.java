@@ -6,7 +6,7 @@ import com.boot.dto.UserAccountDTO;
 
 public interface UserAccountService {
 	//회원가입
-	String register(UserAccountDTO userAccountDTO);
+	String register(UserAccountDTO userAccountDTO, MultipartFile file);
 
 	UserAccountDTO login(String userId, String password);
 	
@@ -20,4 +20,6 @@ public interface UserAccountService {
     int deleteUser(String userId, String loginType);
     
     String saveProfileImage(MultipartFile file);
+    
+    String getLoginType(String userId);
 }

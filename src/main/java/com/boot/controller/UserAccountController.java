@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.boot.dto.UserAccountDTO;
 import com.boot.service.UserAccountService;
+import com.boot.util.JwtUtil;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -25,62 +28,63 @@ public class UserAccountController {
 
 	@Autowired
     private UserAccountService userAccountService;
+	
+	@Autowired
+	private JwtUtil jwtUtil;
 
     // 회원가입 처리
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserAccountDTO userAccountDTO) {
-        String result = userAccountService.register(userAccountDTO);
-        return ResponseEntity.ok(result);  // 성공 메시지를 반환
-    }
+	@PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> register(
+	        @RequestPart("user") UserAccountDTO userAccountDTO,
+	        @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+	) {
+	    String result = userAccountService.register(userAccountDTO, profileImage);
+	    return ResponseEntity.ok(result);
+	}
     
     @PostMapping("/login")
-    public Object login(@RequestBody UserAccountDTO dto, HttpSession session) {
+    public ResponseEntity<?> login(@RequestBody UserAccountDTO dto) {
 
         UserAccountDTO user = userAccountService.login(dto.getUser_id(), dto.getUser_password());
 
-        // 로그인 실패
         if (user == null) {
-            return "아이디 또는 비밀번호가 올바르지 않습니다.";
+            return ResponseEntity.badRequest().body("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        // 로그인 성공하면 유저 정보 리턴 (비밀번호는 제외)
-        user.setUser_password(null);
-        
-        session.setAttribute("userId", user.getUser_id());  // 세션 저장
-        session.setAttribute("userName", user.getNickname());  // 세션 저장
-        session.setAttribute("loginType", "LOCAL");
-        
-        session.setMaxInactiveInterval(60 * 60); // 세션 유지 시간 1시간 설정(초 단위)
-        
-        return user;
+        user.setUser_password(null); // 비밀번호 제거
+
+        // JWT 발급
+        String token = jwtUtil.createToken(user.getUser_id(), "LOCAL");
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("token", token);
+        result.put("user", user);
+
+        return ResponseEntity.ok(result);
     }
     
     @GetMapping("/info")
-    public Map<String, Object> getUserInfo(HttpSession session) {
-
-        String userId = (String) session.getAttribute("userId");
-        String loginType = (String) session.getAttribute("loginType");
-
-        if (userId == null) {
-            return null;
+    public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String authHeader) {
+    	
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("토큰 없음");
         }
+
+        String token = authHeader.substring(7);
+
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("유효하지 않은 토큰");
+        }
+
+        String userId = jwtUtil.getUsername(token);
 
         UserAccountDTO user = userAccountService.findUserInfo(userId);
 
-        // 프론트에서 사용하는 키(userId / createdAt)에 정확히 맞춰 변환
-        Map<String, Object> result = new HashMap<>();
-        result.put("userId", user.getUser_id());
-        result.put("email", user.getEmail());
-        result.put("nickname", user.getNickname());
-        result.put("profileImage", user.getProfileImage());
-        result.put("createdAt", user.getCreatedAt());
-        result.put("loginType", loginType);
-
-        return result;
+        return ResponseEntity.ok(user);
     }
     
     @PostMapping("/modifyUser")
-    public int modifyUser(
+    public ResponseEntity<?> modifyUser(
             @RequestParam("user_id") String userId,
             @RequestParam("email") String email,
             @RequestParam("nickname") String nickname,
@@ -99,30 +103,61 @@ public class UserAccountController {
                 account.setProfileImage(savedFileName);
             }
 
-            return userAccountService.updateUserInfo(account); // 성공하면 1 반환
+            int result = userAccountService.updateUserInfo(account);
+
+            if (result == 1) {
+
+                // 🔥 DB에서 loginType 가져오기 (LOCAL / KAKAO / NAVER)
+                String loginType = userAccountService.getLoginType(userId);
+
+                // 🔥 generateToken() 말고 createToken() 사용
+                String newToken = jwtUtil.createToken(userId, loginType);
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("result", 1);
+                response.put("token", newToken);
+
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.ok(Map.of("result", 0));
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            return 0; // 실패
+            return ResponseEntity.status(500).body("Error");
         }
     }
 
 
     
     @PostMapping("/deleteUser")
-    public int deleteUser(HttpSession session) {
+    public ResponseEntity<?> deleteUser(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("토큰 없음");
+            }
 
-        String userId = (String) session.getAttribute("userId");
-        String loginType = (String) session.getAttribute("loginType");
+            String token = authHeader.substring(7);
 
-        if (userId == null || loginType == null) {
-            System.out.println("❌ 세션 정보 없음 → 실패");
-            return 0;
+            if (!jwtUtil.validateToken(token)) {
+                return ResponseEntity.status(401).body("유효하지 않은 토큰");
+            }
+
+            String userId = jwtUtil.getUsername(token);
+            String loginType = jwtUtil.getLoginType(token);
+
+            // null 체크
+            if (userId == null || loginType == null) {
+                return ResponseEntity.status(400).body("userId 또는 loginType이 null");
+            }
+
+            int result = userAccountService.deleteUser(userId, loginType);
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace(); // 서버 로그 확인
+            return ResponseEntity.status(500).body("서버 오류 발생");
         }
-
-        int result = userAccountService.deleteUser(userId, loginType);
-
-        if (result > 0) session.invalidate();
-        return result;
     }
 
 }

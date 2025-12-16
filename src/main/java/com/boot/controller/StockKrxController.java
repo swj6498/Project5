@@ -1,16 +1,14 @@
-// src/main/java/com/boot/controller/StockApiController.java
+// src/main/java/com/boot/controller/StockKrxController.java
 package com.boot.controller;
 
 import com.boot.dto.*;
 import com.boot.service.*;
 import lombok.RequiredArgsConstructor;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,20 +21,62 @@ public class StockKrxController {
     private final StockKosdaqService kosdaqService;
     private final RecentStockService recentStockService;
     private final RankingService rankingService;
+    private final FavoriteStockService favoriteStockService;
+    private final StockCacheService stockCacheService;
+    private final StockDetailService stockDetailService;
 
-    // 1. KOSPI 목록
+// ==================== 즐겨찾기 API ====================
+
+    // 즐겨찾기 목록 조회
+    @GetMapping("/krx/favorites")
+    public List<StockSimpleDTO> getFavorites() {
+        String userId = getCurrentUserId();  // 아래에 있는 메서드 사용
+        return favoriteStockService.getFavorites(userId);
+    }
+
+    // 즐겨찾기 추가
+    @PostMapping("/krx/favorites/add")
+    public ResponseEntity<Void> addFavorite(@RequestBody Map<String, String> body) {
+        String code = body.get("code");
+        String name = body.get("name");
+        if (code == null || name == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        favoriteStockService.addFavorite(getCurrentUserId(), code, name);
+        return ResponseEntity.ok().build();
+    }
+
+    // 즐겨찾기 삭제
+    @DeleteMapping("/krx/favorites/remove")
+    public ResponseEntity<Void> removeFavorite(@RequestBody Map<String, String> body) {
+        String code = body.get("code");
+        if (code == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        favoriteStockService.removeFavorite(getCurrentUserId(), code);
+        return ResponseEntity.ok().build();
+    }
+
+    // 현재 로그인한 사용자 ID 가져오기 (JWT 기반)
+    private String getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())
+                ? auth.getName()
+                : "guest";  // 로그인 안 된 경우 (테스트용)
+    }
+
+    // ---------- 기존 메서드 (캐시 적용) ----------
     @GetMapping("/krx/kospi/list")
-    public List<StockKospiDTO> getKospiList() {
-        return kospiService.findAll();
+    public List<Map<String, Object>> getKospiList() {
+        return stockCacheService.getKospiList();
     }
 
-    // 2. KOSDAQ 목록
     @GetMapping("/krx/kosdaq/list")
-    public List<StockKosdaqDTO> getKosdaqList() {
-        return kosdaqService.findAll();
+    public List<Map<String, Object>> getKosdaqList() {
+        return stockCacheService.getKosdaqList();
     }
 
-    // 3. 종목 상세 정보 (KOSPI + KOSDAQ 통합)
+    // ---------- 종목 상세 ----------
     @GetMapping("/krx/detail/{code}")
     public Object getStockDetail(@PathVariable String code) {
         StockKospiDTO kospi = kospiService.findByCode(code);
@@ -44,68 +84,75 @@ public class StockKrxController {
         return kosdaqService.findByCode(code);
     }
 
-    // 4. 뉴스 크롤링
+    // 뉴스 API
     @GetMapping("/krx/news/{code}")
-    public List<DetailNewsDTO> getNews(@PathVariable String code) {
-        try {
-            Document doc = Jsoup.connect("https://finance.naver.com/item/main.naver?code=" + code)
-                    .userAgent("Mozilla/5.0")
-                    .timeout(10000)
-                    .get();
-
-            Elements items = doc.select(".sub_section.news_section li");
-            List<DetailNewsDTO> news = new ArrayList<>();
-
-            for (Element item : items) {
-                Element titleEl = item.selectFirst(".txt a:first-child");
-                if (titleEl == null) continue;
-
-                DetailNewsDTO n = new DetailNewsDTO();
-                n.setTitle(titleEl.text().trim());
-                n.setLink("https://finance.naver.com" + titleEl.attr("href"));
-
-                Elements emTags = item.select("em");
-                String date = "";
-                String related = null;
-
-                for (Element em : emTags) {
-                    if (em.parent() != null && em.parent().classNames().contains("link_relation")) {
-                        related = em.text().trim();
-                    } else {
-                        date = em.text().trim();
-                    }
-                }
-
-                n.setDate(date.isEmpty() ? "최근" : date);
-                n.setRelated(related);
-                news.add(n);
-            }
-            return news.stream().limit(10).toList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+    public List<StockDetailNewsDTO> getNews(@PathVariable String code) {
+        return stockDetailService.getNews(code);
     }
 
-    // 5. 최근 본 종목 추가
+    // 차트 이미지 URL API
+    // type = "area" (선차트) | "candle" (봉차트)
+    // period = "day", "week", "month", "month3", "year", "year3", "year5", "year6"
+    @GetMapping("/krx/chart/{code}")
+    public Map<String, String> getChart(
+            @PathVariable String code,
+            @RequestParam(defaultValue = "area") String type,
+            @RequestParam(defaultValue = "day") String period
+    ) {
+        String url = stockDetailService.getChartUrl(code, type, period);
+        return Map.of("imgUrl", url);
+    }
+
+    // 주요 시세 정보 API
+    @GetMapping("/krx/price/{code}")
+    public StockPriceInfoDTO getPriceInfo(@PathVariable String code) {
+        return stockDetailService.getPriceInfo(code);
+    }
+
+    // ---------- 최근 본 종목 ----------
     @PostMapping("/krx/recent/add")
-    public void addRecentStock(@RequestBody Map<String, String> body) {
+    public ResponseEntity<Void> addRecentStock(@RequestBody Map<String, String> body) {
         String code = body.get("code");
         String name = body.get("name");
         if (code != null && name != null) {
             recentStockService.addRecentStock(code, name);
         }
+        return ResponseEntity.ok().build();
     }
 
-    // 6. 최근 본 종목 조회
     @GetMapping("/krx/recent")
     public List<StockSimpleDTO> getRecentStocks() {
         return recentStockService.getRecentStocks();
     }
 
-    // 7. 실시간 거래대금 랭킹 Top5
+    // 거래대금 Top 10
     @GetMapping("/krx/ranking/trade")
     public List<RankingDTO> getTradeRanking() {
-        return rankingService.getTradeRankingTop5();
+        return rankingService.getTopByTradeAmount();
     }
+
+    // 거래량 Top 10
+    @GetMapping("/krx/ranking/volume")
+    public List<RankingDTO> getVolumeRanking() {
+        return rankingService.getTopByVolume();
+    }
+
+    // 등락률 Top 10
+    @GetMapping("/krx/ranking/change")
+    public List<RankingDTO> getChangeRanking() {
+        return rankingService.getTopByChangeRate();
+    }
+
+    // 시가총액 Top 10
+    @GetMapping("/krx/ranking/market")
+    public List<RankingDTO> getMarketCapRanking() {
+        return rankingService.getTopByMarketCap();
+    }
+
+    // 혼합점수 Top 10
+    @GetMapping("/krx/ranking/mixed")
+    public List<RankingDTO> getMixedRanking() {
+        return rankingService.getTopByMixedScore();
+    }
+
 }

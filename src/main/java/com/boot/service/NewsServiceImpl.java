@@ -1,18 +1,31 @@
 package com.boot.service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.boot.dao.SearchLogRepository;
 import com.boot.dao.StockNewsRepository;
+import com.boot.dto.NewsTerm;
 import com.boot.dto.StockNews;
 
 @Service
@@ -20,14 +33,24 @@ public class NewsServiceImpl implements NewsService {
 
     private final StockNewsRepository stockNewsRepository;
     private final NlpService nlpService;
+    private final SearchLogRepository searchLogRepository;
+    private final MongoTemplate mongoTemplate;
+    private final Map<String, List<Map<String, Object>>> tfidfCache = new ConcurrentHashMap<>();
 
     // 🔵 FastAPI 연동용 RestTemplate & 기본 URL
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String FASTAPI_BASE_URL = "http://localhost:8000";
 
-    public NewsServiceImpl(StockNewsRepository stockNewsRepository, NlpService nlpService) {
+    public NewsServiceImpl(
+            StockNewsRepository stockNewsRepository,
+            NlpService nlpService,
+            MongoTemplate mongoTemplate,
+            SearchLogRepository searchLogRepository
+    ) {
         this.stockNewsRepository = stockNewsRepository;
         this.nlpService = nlpService;
+        this.mongoTemplate = mongoTemplate;
+        this.searchLogRepository = searchLogRepository;
     }
 
     @Override
@@ -74,7 +97,7 @@ public class NewsServiceImpl implements NewsService {
                 candidates = stockNewsRepository
                         .findAll()
                         .stream()
-                        .limit(200)
+                        .limit(100)
                         .collect(Collectors.toList());
             } else {
                 var pageable = PageRequest.of(
@@ -237,4 +260,98 @@ public class NewsServiceImpl implements NewsService {
             );
         }
     }
+    
+ // 인기 검색어 (최근 n시간 집계)
+    @Override
+    public List<Map<String, Object>> getTrendingKeywords(int hours) {
+
+        LocalDateTime since = LocalDateTime.now().minusHours(hours);
+        Date sinceDate = Date.from(since.atZone(ZoneId.systemDefault()).toInstant());
+
+        Aggregation agg = Aggregation.newAggregation(
+                Aggregation.match(
+                        Criteria.where("timestamp").gte(sinceDate)
+                ),
+                Aggregation.group("keyword")
+                        .count().as("count"),
+                Aggregation.sort(Sort.Direction.DESC, "count"),
+                Aggregation.limit(50) 
+        );
+
+        AggregationResults<Map> results =
+                mongoTemplate.aggregate(agg, "search_log", Map.class);
+
+        List<Map<String, Object>> rawList = results.getMappedResults().stream()
+                .map(m -> Map.of(
+                        "keyword", m.get("_id"),
+                        "count", m.get("count")
+                ))
+                .toList();
+
+        return rawList.stream()
+                .map(m -> Map.of(
+                        "keyword", m.get("keyword"),
+                        "count", m.get("count")
+                ))
+                .limit(5)
+                .toList();
+    }
+    
+    @Override
+    public List<String> getAutocompleteSuggestions(String query) {
+        // 'query'와 일치하는 term을 찾기 위한 MongoDB 쿼리
+        Query searchQuery = new Query();
+        searchQuery.addCriteria(Criteria.where("term").regex(query, "i"));  // 대소문자 구분 없이 검색
+        searchQuery.limit(10);  // 최대 10개만 가져오기
+
+        // 검색 결과
+        List<NewsTerm> results = mongoTemplate.find(searchQuery, NewsTerm.class, "news_terms");
+
+        // 결과에서 term만 추출하여 리스트로 반환
+        return results.stream()
+                      .map(NewsTerm::getTerm)  // getTerm() 메서드 사용
+                      .collect(Collectors.toList());
+    }
+    
+    @Override
+    public Slice<Map<String, Object>> searchWithTfidfSlice(
+            String query,
+            String category,
+            int page,
+            int size
+    ) {
+        String cacheKey =
+                query.trim().toLowerCase()
+                + "::"
+                + (category == null ? "" : category.trim());
+
+        List<Map<String, Object>> allResults = tfidfCache.get(cacheKey);
+        if (allResults == null) {
+            allResults = searchWithTfidfRanking(query, category);
+
+            if (tfidfCache.size() >= 100) {
+                tfidfCache.clear();
+            }
+            tfidfCache.put(cacheKey, allResults);
+        }
+
+        int start = page * size;
+        int end = Math.min(start + size + 1, allResults.size());
+
+        List<Map<String, Object>> content =
+                start >= allResults.size()
+                        ? List.of()
+                        : new ArrayList<>(allResults.subList(start, end));
+
+        boolean hasNext = content.size() > size;
+        if (hasNext) content.remove(size);
+
+        return new SliceImpl<>(
+                content,
+                PageRequest.of(page, size),
+                hasNext
+        );
+    }
+
+
 }

@@ -21,4 +21,6 @@ public class StockNews {
     private String image_url;   // 기사 이미지 URL
     private String pubDate;     // 작성일
     private String category;    // 세부 카테고리 (금융, 증권 등)
+    private String region; // "korea" 또는 "global"
 }
+

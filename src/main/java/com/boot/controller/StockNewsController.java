@@ -3,6 +3,7 @@ package com.boot.controller;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boot.dto.StockGlobalNews;
 import com.boot.dto.StockNews;
 import com.boot.service.StockNewsService;
 
@@ -25,9 +27,8 @@ import lombok.RequiredArgsConstructor;
 public class StockNewsController {
 
     private final StockNewsService stockNewsService;
-    private final MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;  // ★ 추가 필수
 
-    // 카테고리별 뉴스 목록 (기본 리스트)
     @GetMapping
     public Page<StockNews> getNews(
             @RequestParam(value = "category", required = false) String category,
@@ -38,19 +39,17 @@ public class StockNewsController {
         return stockNewsService.search(null, category, page, size, sort);
     }
 
-    // 단순 키워드 검색 (제목/본문/기자/언론사)
     @GetMapping("/search")
     public List<StockNews> searchNews(@RequestParam("q") String keyword) {
 
         Query query = new Query();
         query.addCriteria(
-                new Criteria().orOperator(
-                        Criteria.where("title").regex(keyword, "i"),
-                        Criteria.where("content").regex(keyword, "i"),
-                        Criteria.where("author").regex(keyword, "i"),
-                        Criteria.where("media").regex(keyword, "i"),
-                        Criteria.where("category").regex(keyword, "i")
-                )
+            new Criteria().orOperator(
+                Criteria.where("title").regex(keyword, "i"),
+                Criteria.where("description").regex(keyword, "i"),
+                Criteria.where("author").regex(keyword, "i"),
+                Criteria.where("pub_date").regex(keyword, "i")
+            )
         );
 
         List<StockNews> result = mongoTemplate.find(query, StockNews.class);
@@ -59,4 +58,27 @@ public class StockNewsController {
 
         return result;
     }
+    
+    @GetMapping("/global")
+    public Page<StockGlobalNews> getGlobalNews(
+            @RequestParam(required = false) String category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sort
+    ) {
+        return stockNewsService.getGlobalNews(category, page, size, sort);
+    }
+
+    @GetMapping("/global/search")
+    public Page<StockGlobalNews> searchGlobal(
+            @RequestParam String q,
+            @RequestParam(required = false) String category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,   // ✅ 통일
+            @RequestParam(defaultValue = "desc") String sort
+    ) {
+        return stockNewsService.searchGlobalNews(category, q, page, size, sort);
+    }
+
+
 }

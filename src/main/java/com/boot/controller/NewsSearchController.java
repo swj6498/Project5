@@ -1,10 +1,16 @@
 package com.boot.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.boot.dao.SearchLogRepository;
+import com.boot.dto.SearchLog;
 import com.boot.service.NewsService;
 
 import lombok.RequiredArgsConstructor;
@@ -15,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class NewsSearchController {
 
     private final NewsService newsService;
+    private final SearchLogRepository searchLogRepository;
 
     // TF-IDF 랭킹 검색 (카테고리 포함)
     @GetMapping("/search-tfidf")
@@ -22,6 +29,12 @@ public class NewsSearchController {
             @RequestParam("q") String query,
             @RequestParam(value = "category", required = false) String category
     ) {
+    	//검색기록
+    	SearchLog log = new SearchLog();
+        log.setKeyword(query);
+        log.setTimestamp(new Date());
+        searchLogRepository.save(log);
+        
         return newsService.searchWithTfidfRanking(query, category);
     }
 
@@ -50,4 +63,22 @@ public class NewsSearchController {
                 "type", type
         );
     }
+    
+    @GetMapping("/trending")
+    public List<Map<String, Object>> trending(
+            @RequestParam(name = "hours", defaultValue = "24") int hours
+    ) {
+        return newsService.getTrendingKeywords(hours);
+    }
+    
+    // 자동완성
+    @GetMapping("/autocomplete")
+    public List<String> autocomplete(
+            @RequestParam(name = "query") String query
+    ) {
+        return newsService.getAutocompleteSuggestions(query);
+    }
+
+    
 }
+

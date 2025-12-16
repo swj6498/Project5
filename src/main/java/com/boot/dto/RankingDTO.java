@@ -14,4 +14,5 @@ public class RankingDTO {
     private Long score;             // 거래대금 (억 단위, 예: 2138억)
     private String changeRate;      // 등락률 "+3.14%" (옵션)
     private Long marketCap;         // 시가총액 (억 단위)
+    private Long mixedScore;
 }

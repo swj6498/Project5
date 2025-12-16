@@ -31,4 +31,6 @@ public interface UserAccountDAO {
     
     //회원탈퇴
     int deleteUser(@Param("userId") String userId, @Param("loginType") String loginType);
+    
+    String getLoginType(String userId);
 }

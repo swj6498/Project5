@@ -1,5 +1,6 @@
 package com.boot.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,24 +24,58 @@ public class UserAccountServiceImpl implements UserAccountService{
     private UserAccountDAO dao;
     
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-	
-	@Override
-	public String register(UserAccountDTO userAccountDTO) {
-		 // 아이디나 이메일 중복 체크
-        if (dao.findByUserId(userAccountDTO.getUser_id()) != null) {
-            return "이미 사용 중인 아이디입니다.";
-        }
+    
+    @Value("${upload.path}")
+    private String uploadPath;
 
-        if (dao.findByEmail(userAccountDTO.getEmail()) != null) {
-            return "이미 사용 중인 이메일입니다.";
-        }
-        
+	@Override
+    public String register(UserAccountDTO userAccountDTO, MultipartFile profileImage) {
+
+        // 1) 아이디, 이메일 중복 체크
+		if (dao.findByUserId(userAccountDTO.getUser_id()) != null) {
+		    return "error.userIdExists";
+		}
+
+		if (dao.findByEmail(userAccountDTO.getEmail()) != null) {
+		    return "error.emailExists";
+		}
+
+
+        // 2) 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(userAccountDTO.getUser_password());
         userAccountDTO.setUser_password(encodedPassword);
-        
-        dao.insertUserAccount(userAccountDTO);  // XML 쿼리로 저장
-        return "회원가입이 성공적으로 완료되었습니다.";
+
+        // 3) 프로필 이미지 저장 처리
+        if (profileImage != null && !profileImage.isEmpty()) {
+            try {
+                // 업로드 폴더 없으면 자동 생성
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                // 파일명 중복 방지 (UUID)
+                String fileName = UUID.randomUUID() + "_" + profileImage.getOriginalFilename();
+                File saveFile = new File(uploadPath, fileName);
+
+                // 파일 저장
+                profileImage.transferTo(saveFile);
+
+                // DTO에 저장된 파일명 넣기
+                userAccountDTO.setProfileImage(fileName);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "이미지 업로드 중 오류가 발생했습니다.";
+            }
+        }
+
+        // 4) DB 저장 (MyBatis Mapper → insertUserAccount 사용)
+        dao.insertUserAccount(userAccountDTO);
+
+        return "register.success";
     }
+
 
 	@Override
     public UserAccountDTO login(String userId, String rawPassword) {
@@ -86,10 +121,6 @@ public class UserAccountServiceImpl implements UserAccountService{
 		return dao.deleteUser(userId, loginType);
 	}
 	
-	@Value("${upload.path}")
-    private String uploadPath;
-
-	
 	@Override
 	public String saveProfileImage(MultipartFile file) {
 	    if (file == null || file.isEmpty()) return null;
@@ -114,4 +145,9 @@ public class UserAccountServiceImpl implements UserAccountService{
 	        return null;
 	    }
 	}
+	
+	@Override
+    public String getLoginType(String userId) {
+        return dao.getLoginType(userId);
+    }
 }
