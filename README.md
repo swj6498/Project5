@@ -41,7 +41,7 @@ pip install fastapi uvicorn pydantic cd C:\dev\work_springboot\Project5\scripts 
 
 -C:\dev\work_springboot\Project5\scripts 경로에 '.env' 파일 생성
 
-내용 : PERPLEXITY_API_KEY=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
+내용 : PERPLEXITY_API_KEY=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
 MONGO_URI="mongodb+srv://kh:1234@cluster0.fbav0ho.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 키가 자꾸 유출이 돼서 따로 관리하고있습니다.
