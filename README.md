@@ -42,3 +42,33 @@
 | 개발 도구 / IDE      | ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ%20IDEA-000000?style=flat&logo=intellijidea&logoColor=white)&nbsp;![STS](https://img.shields.io/badge/Spring%20Tool%20Suite-6DB33F?style=flat&logo=spring&logoColor=white)&nbsp;![VS Code](https://img.shields.io/badge/VS%20Code-007ACC?style=flat&logo=visualstudiocode&logoColor=white) |
 | 형상 관리 / 협업     | ![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)&nbsp;![Notion](https://img.shields.io/badge/Notion-000000?style=flat&logo=notion&logoColor=white) |
 
+## 🧭 메뉴 구조도 (PDF)
+
+📄 메뉴 구조도 보기  
+👉 [빅데이터_메뉴구조도.pdf](https://github.com/user-attachments/files/24272915/_.pdf)
+
+---
+
+## 🖥 화면 설계서 (PDF)
+
+📄 화면 설계서 보기  
+👉 [빅데이터_화면설계서.pdf](https://github.com/user-attachments/files/24273015/_.pdf)
+
+---
+
+## 🗂 ERD 및 테이블 명세서 (PDF)
+
+📄 ERD  
+</details> <details> <summary><strong>ERD 다이어그램</strong> </summary>
+  
+<img width="529" height="284" alt="image" src="https://github.com/user-attachments/assets/e618cd55-7e86-442d-a1a2-537b495f666e" />
+
+</details>
+
+📄 테이블 명세서  
+➡ [빅데이터_테이블명세서.pdf](https://github.com/user-attachments/files/24273047/_.pdf)
+
+
+---
+
+## 🔍 구현 기능(본인)
