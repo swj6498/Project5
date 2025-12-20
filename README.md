@@ -71,4 +71,70 @@
 
 ---
 
-## 🔍 구현 기능(본인)
+## 🔍 주요 구현 기능(본인)
+
+<details>
+<summary><strong>FastAPI 서버를 연동한 데이터 관리 및 수집</strong></summary>
+  
+**파일명**: `fastapi_server.py`  
+  
+**용도**: MongoDB Change Stream으로 뉴스 기사 컬렉션에서 실시간으로 명사를 추출해 카테고리별 빈도 통계를 자동 집계 -> news_terms 컬렉션에 저장,
+         형태소 분석/TF-IDF랭킹/오타교정/챗봇 연동
+         
+- 명사 추출·분석 로직: stopwords_kor.txt(불용어) 로드, KoNLPy(Okt) 형태소 분석기 사용
+
+- Redis 캐시(성능개선): 방식-Look-aside 캐시, pickle 직렬화 / 사용처: TF-IDF 검색 결과 캐시, 뉴스 검색 오타 교정 결과 캐시
+
+</details>
+
+<details>
+  <summary><strong>TF-IDF 랭킹 구현</strong></summary>
+  
+  **파일명**: 'tfidf_rank_lib.py'
+  
+  **용도**: TF-IDF 기반 뉴스 랭킹
+  
+- scikit-learn TF-IDF + 코사인 유사도 기반 기본 점수 계산
+- 
+- 검색 정확도를 높이기 위해 가중치 보정 로직 추가
+- 
+- 키워드가 제목 앞부분에 위치할 경우 가중치
+
+- 본문 초반 등장 시 가중치
+- 
+- 검색어 간 근접도(Proximity) 반영
+- 
+- 단순 키워드 포함이 아닌 의미 기반 정렬 구현
+- 
+</details>
+
+<details>
+  <summary><strong>검색어 오타 교정 기능 구현</strong></summary>
+  
+  **파일명**: 'news_typo_corrector.py'
+  
+  **용도**: 메인의 뉴스탭 or 뉴스화면에서 검색했을 때 오타 교정 및 대체 검색어 제안
+  
+- 3단계 오타 교정 전략 : 정확 일치 여부 우선 확인 
+→ MongoDB Aggregation으로 후보 축소
+→ Levenshtein 거리 + 빈도수 기반 최적 후보 선택
+
+- 실패 시 LLM(API) 를 활용한 최종 보정 → 사용자가 오타 입력 시에도 검색 성공률 유지
+
+</details>
+
+
+</details>
+
+<details>
+  <summary><strong>챗봇 분석·요약 기능 구현</strong></summary>
+  
+  **파일명**: 'chat_summary_lib.py'
+  
+  **용도**: 사용자가 검색한 단어or문장이 무엇인지/주식과 어떤 연관이 있는지 정보 제공
+  
+- 검색어 기준으로 AI 서버에 분석 요청 → 핵심 내용 요약 결과를 UI에 표시
+
+</details>
+
+
