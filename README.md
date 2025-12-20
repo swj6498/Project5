@@ -137,4 +137,10 @@
 
 </details>
 
+<details>
+  
+   <summary><strong>뉴스화면 검색 시연영상</strong></summary>
 
+https://github.com/user-attachments/assets/199ce594-766c-4652-a668-8d032b032778
+  
+</details>
