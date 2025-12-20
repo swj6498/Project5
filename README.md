@@ -74,6 +74,7 @@
 ## 🔍 주요 구현 기능(본인)
 
 <details>
+  
 <summary><strong>FastAPI 서버를 연동한 데이터 관리 및 수집</strong></summary>
   
 **파일명**: `fastapi_server.py`  
@@ -88,6 +89,7 @@
 </details>
 
 <details>
+  
   <summary><strong>TF-IDF 랭킹 구현</strong></summary>
   
   **파일명**: 'tfidf_rank_lib.py'
@@ -104,6 +106,7 @@
 </details>
 
 <details>
+  
   <summary><strong>검색어 오타 교정 기능 구현</strong></summary>
   
   **파일명**: 'news_typo_corrector.py'
@@ -122,6 +125,7 @@
 </details>
 
 <details>
+  
   <summary><strong>챗봇 분석·요약 기능 구현</strong></summary>
   
   **파일명**: 'chat_summary_lib.py'
