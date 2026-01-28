@@ -206,7 +206,7 @@ async def lifespan(app: FastAPI):
 
 app.router.lifespan_context = lifespan
 
-# ---------- 기존 Cache Utils (변경없음) ----------
+# ---------- 기존 Cache Utils ----------
 def get_cache(key: str):
     try:
         data = redis_client.get(key)
@@ -227,7 +227,7 @@ def make_docs_hash(documents: List[Dict[str, Any]]) -> str:
     ids.sort()
     return hashlib.md5(",".join(ids).encode()).hexdigest()
 
-# ---------- 기존 API들 (변경없음) ----------
+# ---------- 기존 API들 ----------
 class NlpRequest(BaseModel):
     query: str
 
@@ -304,7 +304,7 @@ class SummaryRequest(BaseModel):
 def chat_summary(req: SummaryRequest):
     return build_summary(req.query)
 
-# ---------- 새로운 News Terms API들 ----------
+# ---------- News Terms API들 ----------
 @app.get("/news-terms/health")
 async def news_terms_health():
     """News Terms 상태 확인"""
@@ -370,7 +370,7 @@ async def build_full_terms():
         await news_terms_collection.insert_many(docs)
         print(f"✅ 전체 재구축 완료: {len(docs)}개")
 
-# ---------- 기존 Health (확장) ----------
+# ---------- Health ----------
 @app.get("/health")
 def health_check():
     return {
@@ -389,3 +389,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True
     )
+
