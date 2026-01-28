@@ -224,6 +224,31 @@
 
 - 실패 시 LLM(API) 를 활용한 최종 보정 → 사용자가 오타 입력 시에도 검색 성공률 유지
 
+<details>
+  <summary><strong> Levenshtein 거리 기반 오타 판별</strong></summary>
+
+  ```python
+  dist = levenshtein(q, term)
+
+  if dist <= 3:
+      score = 1.0 / (dist + 1) + (freq / 10000.0)
+  ```
+</details>
+
+<details>
+  <summary><strong> Exact Match → Aggregation → LLM 단계적 파이프라인</strong></summary>
+
+  ```python
+  # 1) exact match
+  news_terms.find_one({"term": q})
+  
+  # 2) aggregation + levenshtein
+  suggest_news_terms_improved(q)
+  
+  # 3) llm fallback
+  llm_correct_term(q)
+  ```
+</details>
   
 ### 🤖 챗봇 분석·요약 기능 구현
   
