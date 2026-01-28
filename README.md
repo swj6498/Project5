@@ -86,12 +86,10 @@
 
 - Redis 캐시(성능개선): 방식-Look-aside 캐시, pickle 직렬화 / 사용처: TF-IDF 검색 결과 캐시, 뉴스 검색 오타 교정 결과 캐시
 
-
-<details>
   
-  <summary><strong>TF-IDF 랭킹 구현</strong></summary>
+  ### TF-IDF 랭킹 구현
   
-  **파일명**: 'tfidf_rank_lib.py'
+  **파일명**: `tfidf_rank_lib.py`
   
   **용도**: TF-IDF 기반 뉴스 랭킹
   
@@ -101,14 +99,11 @@
 - 본문 초반 등장 시 가중치
 - 검색어 간 근접도(Proximity) 반영
 - 단순 키워드 포함이 아닌 의미 기반 정렬 구현
-  
-</details>
 
-<details>
   
-  <summary><strong>검색어 오타 교정 기능 구현</strong></summary>
+  ### 검색어 오타 교정 기능 구현
   
-  **파일명**: 'ime_converter.py', 'news_typo_corrector.py'
+  **파일명**: `ime_converter.py`, `news_typo_corrector.py`
   
   **용도**: 메인의 뉴스탭 or 뉴스화면에서 검색했을 때 오타 교정 및 대체 검색어 제안
 
@@ -119,27 +114,18 @@
 
 - 실패 시 LLM(API) 를 활용한 최종 보정 → 사용자가 오타 입력 시에도 검색 성공률 유지
 
-</details>
-
-
-</details>
-
-<details>
   
-  <summary><strong>챗봇 분석·요약 기능 구현</strong></summary>
+  ### 챗봇 분석·요약 기능 구현
   
-  **파일명**: 'chat_summary_lib.py'
+  **파일명**: `chat_summary_lib.py`
   
   **용도**: 사용자가 검색한 단어or문장이 무엇인지/주식과 어떤 연관이 있는지 정보 제공
   
 - 검색어 기준으로 AI 서버에 분석 요청 → 핵심 내용 요약 결과를 UI에 표시
 
-</details>
-
-<details>
   
-   <summary><strong>뉴스화면 검색 시연영상</strong></summary>
+  ### 뉴스화면 검색 시연영상
 
 https://github.com/user-attachments/assets/199ce594-766c-4652-a668-8d032b032778
   
-</details>
+
