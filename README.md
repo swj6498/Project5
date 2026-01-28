@@ -74,8 +74,6 @@
 ---
 
 ## 🔍 주요 구현 기능(본인)
-
-<details>
   
 ###FastAPI 서버를 연동한 데이터 관리 및 수집###
   
@@ -88,7 +86,6 @@
 
 - Redis 캐시(성능개선): 방식-Look-aside 캐시, pickle 직렬화 / 사용처: TF-IDF 검색 결과 캐시, 뉴스 검색 오타 교정 결과 캐시
 
-</details>
 
 <details>
   
