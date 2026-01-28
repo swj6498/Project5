@@ -161,12 +161,54 @@
   
   **용도**: TF-IDF 기반 뉴스 랭킹
   
-- scikit-learn TF-IDF + 코사인 유사도 기반 기본 점수 계산
-- 검색 정확도를 높이기 위해 가중치 보정 로직 추가
-- 키워드가 제목 앞부분에 위치할 경우 가중치
-- 본문 초반 등장 시 가중치
-- 검색어 간 근접도(Proximity) 반영
-- 단순 키워드 포함이 아닌 의미 기반 정렬 구현
+<details>
+  <summary><strong> TF-IDF + 코사인 유사도 기반 점수 산출</strong></summary>
+
+  ```python
+  from sklearn.feature_extraction.text import TfidfVectorizer
+  from sklearn.metrics.pairwise import cosine_similarity
+  
+  vectorizer = TfidfVectorizer(...)
+  doc_vectors = vectorizer.fit_transform(documents)
+  query_vector = vectorizer.transform([query])
+  
+  similarity_scores = cosine_similarity(query_vector, doc_vectors)[0]
+  ```
+</details>
+
+<details>
+  <summary><strong> 제목·본문을 구분한 가중치 적용</strong></summary>
+
+  ```python
+  title_score = cosine_similarity(query_vec, title_vec)[0][i]
+  content_score = cosine_similarity(query_vec, content_vec)[0][i]
+  
+  final_score = title_score * TITLE_WEIGHT + content_score * CONTENT_WEIGHT
+  ```
+</details>
+
+<details>
+  <summary><strong> 키워드 포함 여부 기반 점수 보정</strong></summary>
+
+  ```python
+  if keyword in title:
+    final_score += TITLE_KEYWORD_BONUS
+
+  if keyword in content:
+    final_score += CONTENT_KEYWORD_BONUS
+  ```
+</details>
+
+<details>
+  <summary><strong> 다중 키워드 동시 등장 고려</strong></summary>
+
+  ```python
+  match_count = sum(1 for kw in keywords if kw in content)
+
+  if match_count >= 2:
+    final_score += MULTI_KEYWORD_BONUS
+  ```
+</details>
 
   
 ### ✏️ 검색어 오타 교정 기능 구현
