@@ -107,8 +107,8 @@
   
   **용도**: 메인의 뉴스탭 or 뉴스화면에서 검색했을 때 오타 교정 및 대체 검색어 제안
 
-- 'ime_converter.py' : 두벌식 영타 한글 변환기
-- 'news_typo_corrector.py' : 정확 일치 여부 우선 확인 
+- `ime_converter.py` : 두벌식 영타 한글 변환기
+- `news_typo_corrector.py` : 정확 일치 여부 우선 확인 
 → MongoDB Aggregation으로 후보 축소
 → Levenshtein 거리 + 빈도수 기반 최적 후보 선택
 
