@@ -83,7 +83,7 @@
          형태소 분석/TF-IDF랭킹/오타교정/챗봇 연동
 
 <details>
-  <summary><strong>- 명사 추출·분석 로직: stopwords_kor.txt(불용어) 로드, KoNLPy(Okt) 형태소 분석기 사용</strong></summary>
+  <summary><strong> 명사 추출·분석 로직: stopwords_kor.txt(불용어) 로드, KoNLPy(Okt) 형태소 분석기 사용</strong></summary>
   
   ```python
   def load_stopwords() -> Set[str]:
@@ -123,7 +123,18 @@
   ```
 </details>
 
-- Redis 캐시(성능개선): 방식-Look-aside 캐시, pickle 직렬화 / 사용처: TF-IDF 검색 결과 캐시, 뉴스 검색 오타 교정 결과 캐시
+<details>
+  <summary><strong> Redis 캐시(성능개선): 방식-Look-aside 캐시, pickle 직렬화 / 사용처: TF-IDF 검색 결과 캐시, 뉴스 검색 오타 교정 결과 캐시</strong></summary>
+
+  ```python
+  def get_cache(key: str):
+    data = redis_client.get(key)
+    return pickle.loads(data) if data else None
+
+  def set_cache(key: str, value: Any, ttl: int):
+    redis_client.setex(key, ttl, pickle.dumps(value))
+  ```
+</details>
 
   
 ### 📊 TF-IDF 랭킹 구현
