@@ -82,7 +82,9 @@
 **용도**: MongoDB Change Stream으로 뉴스 기사 컬렉션에서 실시간으로 명사를 추출해 카테고리별 빈도 통계를 자동 집계 -> news_terms 컬렉션에 저장,
          형태소 분석/TF-IDF랭킹/오타교정/챗봇 연동
 
-<detail>명사 추출·분석 로직: stopwords_kor.txt(불용어) 로드, KoNLPy(Okt) 형태소 분석기 사용
+<detail>
+<summary><strong>- 명사 추출·분석 로직: stopwords_kor.txt(불용어) 로드, KoNLPy(Okt) 형태소 분석기 사용</strong></summary>
+
 ```python
 def load_stopwords() -> Set[str]:
     """불용어 로드"""
