@@ -136,6 +136,24 @@
   ```
 </details>
 
+<details>
+  <summary><strong> News Terms Streamer (Change Stream) : MongoDB에 뉴스가 들어오면 실시간으로 용어 통계 자동 업데이트</strong></summary>
+
+  ```python
+  async def run_news_terms_stream():
+    pipeline = [
+        {"$match": {
+            "operationType": "insert",
+            "fullDocument.category": {"$in": CATEGORIES}
+        }}
+    ]
+
+    async with news_collection.watch(pipeline) as stream:
+        async for change in stream:
+            await process_single_doc(change["fullDocument"])
+  ```
+</details>
+
   
 ### 📊 TF-IDF 랭킹 구현
   
