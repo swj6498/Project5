@@ -77,7 +77,7 @@
 
 <details>
   
-<summary><strong>FastAPI 서버를 연동한 데이터 관리 및 수집</strong></summary>
+###FastAPI 서버를 연동한 데이터 관리 및 수집###
   
 **파일명**: `fastapi_server.py`  
   
