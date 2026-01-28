@@ -159,7 +159,7 @@
   
   **파일명**: `tfidf_rank_lib.py`
   
-  **용도**: TF-IDF 기반 뉴스 랭킹
+  **용도**: TF-IDF 기반 뉴스 랭킹, 이를 활용한 게시물 정확도순 정렬
   
 <details>
   <summary><strong> TF-IDF + 코사인 유사도 기반 점수 산출</strong></summary>
