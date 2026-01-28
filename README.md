@@ -81,8 +81,45 @@
   
 **용도**: MongoDB Change Stream으로 뉴스 기사 컬렉션에서 실시간으로 명사를 추출해 카테고리별 빈도 통계를 자동 집계 -> news_terms 컬렉션에 저장,
          형태소 분석/TF-IDF랭킹/오타교정/챗봇 연동
-         
-- 명사 추출·분석 로직: stopwords_kor.txt(불용어) 로드, KoNLPy(Okt) 형태소 분석기 사용
+
+<detail>명사 추출·분석 로직: stopwords_kor.txt(불용어) 로드, KoNLPy(Okt) 형태소 분석기 사용
+```python
+def load_stopwords() -> Set[str]:
+    """불용어 로드"""
+    file_path = "scripts/stopwords_kor.txt"  # scripts 폴더에 맞게 조정
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            stopwords = set()
+            for line in f:
+                word = line.strip()
+                if word and re.match('^[가-힣]+$', word):
+                    stopwords.add(word)
+        print(f"✅ 불용어 로드 완료: {len(stopwords)}개")
+        return stopwords
+    except Exception as e:
+        print(f"❌ 불용어 로드 실패: {e}")
+        return {"있다", "있는", "하다", "되는", "밝혔다", "기자", "등", "통해", "위해"}
+
+def extract_nouns_kor(text: str, stopwords: Set[str]) -> list[str]:
+    """Okt + 불용어 제거로 고품질 명사 추출"""
+    if not text or len(text.strip()) < 2:
+        return []
+    
+    try:
+        nouns = okt.nouns(text)
+        filtered_nouns = [
+            noun for noun in nouns 
+            if (len(noun) >= 2 and 
+                re.match('^[가-힣]+$', noun) and 
+                noun not in stopwords)
+        ]
+        return filtered_nouns
+    except Exception as e:
+        print(f"⚠️ 형태소 분석 실패: {e}")
+        words = re.findall(r'[가-힣]{2,}', text)
+        return [w for w in words if w not in stopwords]
+```
+</detail>
 
 - Redis 캐시(성능개선): 방식-Look-aside 캐시, pickle 직렬화 / 사용처: TF-IDF 검색 결과 캐시, 뉴스 검색 오타 교정 결과 캐시
 
