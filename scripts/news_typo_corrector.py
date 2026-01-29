@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from functools import lru_cache
 
-# ⚡ python-Levenshtein 설치 필요: pip install python-Levenshtein
+# python-Levenshtein 설치 필요: pip install python-Levenshtein
 try:
     from Levenshtein import distance as lev_dist
     FAST_LEVENSHTEIN = True
@@ -23,7 +23,7 @@ client = MongoClient(MONGO_URI)
 db = client["stock"]
 news_terms = db["news_terms"]
 
-# 🧠 인덱스 생성 확인 (최초 1회)
+# 인덱스 생성 확인 (최초 1회)
 def ensure_indexes():
     news_terms.create_index([("term", 1), ("freq", -1)])
     news_terms.create_index("term")
@@ -32,7 +32,7 @@ ensure_indexes()
 
 
 # ---------------------------------------
-# ⚡ 초고속 Levenshtein (C 확장 or Python)
+# Levenshtein (C 확장 or Python)
 # ---------------------------------------
 def levenshtein(a: str, b: str) -> int:
     if FAST_LEVENSHTEIN:
@@ -50,7 +50,7 @@ def levenshtein(a: str, b: str) -> int:
 
 
 # ---------------------------------------
-# 🚀 MongoDB Aggregation 최적화 (30k → 100개)
+# MongoDB Aggregation 최적화 (30k → 100개)
 # ---------------------------------------
 def suggest_news_terms_improved(q: str, limit: int = 10) -> List[Dict[str, Any]]:
     """Aggregation + C-Levenshtein으로 50배 빨라짐"""
@@ -109,7 +109,7 @@ def suggest_news_terms_improved(q: str, limit: int = 10) -> List[Dict[str, Any]]
 
 
 # ---------------------------------------
-# 🤖 LLM (캐싱 + 타임아웃)
+# LLM (캐싱 + 타임아웃)
 # ---------------------------------------
 @lru_cache(maxsize=128)
 def llm_correct_term(original: str) -> str:
@@ -139,7 +139,7 @@ def llm_correct_term(original: str) -> str:
 
 
 # ---------------------------------------
-# 🧠 메인 로직 (캐싱 적용)
+# 메인 로직 (캐싱 적용)
 # ---------------------------------------
 @lru_cache(maxsize=1000)  # 1000개 쿼리 캐싱
 def best_news_correction(q: str) -> Dict[str, Any]:
@@ -184,7 +184,7 @@ def best_news_correction(q: str) -> Dict[str, Any]:
 
 
 # ---------------------------------------
-# 🧪 고속 테스트
+# 고속 테스트
 # ---------------------------------------
 def test_correction_speed():
     import time
@@ -210,3 +210,4 @@ def test_correction_speed():
 
 if __name__ == "__main__":
     test_correction_speed()
+
