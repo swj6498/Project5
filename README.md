@@ -45,7 +45,7 @@
 
 ## ✨ 주요 기능
 
-### 🕷️ 크롤링 코드
+### 🕷️ 크롤링 기능
 
 <details>
 <summary><strong>📈 실시간 국내주식 크롤링 (KOSPI · KOSDAQ)</strong></summary>
@@ -71,6 +71,13 @@ MongoDB에 저장합니다.
 - 방식: asyncio + aiohttp 비동기 크롤링
 - 저장소: MongoDB
 - 실행 방식: FastAPI / 배치 작업에서 함수 단위 호출
+
+</details>
+
+### 🔍 검색 기능
+
+<details>
+ 
 
 </details>
 
@@ -105,7 +112,7 @@ MongoDB에 저장합니다.
 
 ---
 
-## 🔍 주요 구현 기능(본인)
+## 🔎 주요 구현 기능(본인)
   
 ### ⚡ FastAPI 서버를 연동한 데이터 관리 및 수집
   
