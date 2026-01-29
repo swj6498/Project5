@@ -113,7 +113,7 @@ TF-IDF와 코사인 유사도를 활용해
 </details> 
 
 <details> 
-<summary><strong>🔎 검색어 추천 (부분 일치 자동완성)</strong></summary>
+<summary><strong>⌨️ 실시간 자동완성</strong></summary>
 
 사용자가 입력 중인 검색어를 기준으로
 MongoDB에 저장된 검색어 데이터를 활용해
