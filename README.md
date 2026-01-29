@@ -60,7 +60,7 @@
 
 </details>
 <details>
-<summary><strong>📰 국내/해외외 뉴스 크롤링 (네이버 뉴스)</strong></summary>
+<summary><strong>📰 국내/해외 뉴스 크롤링 (네이버 뉴스)</strong></summary>
 
 네이버 뉴스의 경제 섹션과 해외 뉴스(CNN, BBC, CNBC) 대상으로  
 주요 뉴스를 **비동기 방식**으로 수집하는 크롤러입니다.  
