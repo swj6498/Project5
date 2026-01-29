@@ -43,6 +43,39 @@
 
 ---
 
+## ✨ 주요 기능
+
+### 🕷️ 크롤링 코드
+
+<details>
+<summary><strong>📈 실시간 국내주식 크롤링 (KOSPI · KOSDAQ)</strong></summary>
+
+네이버 금융의 KOSPI·KOSDAQ 시가총액 페이지를 대상으로  
+국내 주식 종목 데이터를 매일 자동 수집하는 배치 크롤러입니다.
+
+- 대상 시장: KOSPI / KOSDAQ  
+- 저장 방식: MongoDB Upsert  
+- 캐시 처리: Redis 캐시 무효화  
+- 시간 기준: KST (Asia/Seoul)
+
+</details>
+<details>
+<summary><strong>🇰🇷 국내 뉴스 크롤링 (네이버 뉴스)</strong></summary>
+
+네이버 뉴스의 경제 섹션을 대상으로  
+국내 주요 뉴스를 **비동기 방식**으로 수집하는 크롤러입니다.  
+카테고리별 뉴스 목록을 조회한 뒤, 각 기사 상세 페이지를 병렬로 크롤링하여  
+MongoDB에 저장합니다.
+
+- 대상: 네이버 국내 뉴스 (경제 섹션)
+- 방식: asyncio + aiohttp 비동기 크롤링
+- 저장소: MongoDB
+- 실행 방식: FastAPI / 배치 작업에서 함수 단위 호출
+
+</details>
+
+---
+
 ## 🧭 메뉴 구조도 (PDF)
 
 📄 메뉴 구조도 보기  
